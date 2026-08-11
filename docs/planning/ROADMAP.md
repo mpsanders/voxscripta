@@ -4,6 +4,10 @@ This roadmap is ordered by dependency and learning value. Dates are deliberately
 
 ## Milestone 0: Foundation and decisions
 
+Status: in progress. Module identity, supported Go/platform policy, baseline
+layout, CI, license, dependency guidance, and initial diagrams are complete.
+Observed `yt-dlp` contracts and legal test fixtures remain outstanding.
+
 Define the module and establish the contracts before committing to implementation details.
 
 Deliverables:
@@ -22,6 +26,10 @@ Exit criteria:
 - Public domain types and errors have an agreed draft.
 
 ## Milestone 1: Normalized transcript core
+
+Status: in progress. The domain model, validation rules, errors, provider
+contract, URL/ID parsing, and plain-text rendering are implemented offline.
+WebVTT parsing and rolling-caption normalization are next.
 
 Build the provider-independent model and parsing foundation entirely offline.
 

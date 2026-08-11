@@ -4,29 +4,29 @@ This is the actionable project backlog. Check an item only when its implementati
 
 ## Now: establish the project
 
-- [ ] Choose the Go module/import path and initialize `go.mod`.
-- [ ] Choose the exported package name and the development CLI name.
-- [ ] Set the minimum supported Go version.
-- [ ] Create the initial layout: public package, focused `internal` packages, `cmd/<name>`, fixtures, examples, and `docs/uml`.
-- [ ] Add a license and contribution guidance.
-- [ ] Add CI for build, test, `go vet`, formatting checks, and the supported OS matrix.
-- [ ] Document how contributors install and verify `yt-dlp` without having the library install it.
+- [x] Choose the Go module/import path and initialize `go.mod`.
+- [x] Choose the exported package name and the development CLI name.
+- [x] Set the minimum supported Go version.
+- [x] Create the initial layout: public package, focused `internal` packages, `cmd/<name>`, fixtures, examples, and `docs/uml`.
+- [x] Add a license and contribution guidance.
+- [x] Add CI for build, test, `go vet`, formatting checks, and the supported OS matrix.
+- [x] Document how contributors install and verify `yt-dlp` without having the library install it.
 - [ ] Select stable public test videos representing manual captions, automatic captions, multiple languages, and no captions; record why each is safe to use.
 - [ ] Capture representative, sanitized `yt-dlp` JSON and subtitle fixtures for offline tests.
-- [ ] Resolve the repository convention mismatch between the current `planning/` directory and the `docs/planning` path described in `agents.md`.
+- [x] Resolve the repository convention mismatch between the current `planning/` directory and the `docs/planning` path described in `agents.md`.
 
 ## Core model and parsing
 
-- [ ] Define `Transcript`, `Segment`, source-kind, language, and provider metadata types.
-- [ ] Specify invariants for segment ordering, zero/negative timestamps, empty text, and overlapping cues.
-- [ ] Implement YouTube video ID and URL parsing for documented URL forms.
-- [ ] Define `Provider` and orchestration contracts with `context.Context`.
-- [ ] Define errors for invalid input, missing dependency, unavailable transcript, unsupported format, cancellation, and provider failure.
+- [x] Define `Transcript`, `Segment`, source-kind, language, and provider metadata types.
+- [x] Specify invariants for segment ordering, zero/negative timestamps, empty text, and overlapping cues.
+- [x] Implement YouTube video ID and URL parsing for documented URL forms.
+- [x] Define `Provider` and orchestration contracts with `context.Context`.
+- [x] Define errors for invalid input, missing dependency, unavailable transcript, unsupported format, cancellation, and provider failure.
 - [ ] Implement the first subtitle parser using an established library if evaluation shows it handles YouTube output correctly.
 - [ ] Normalize HTML entities, Unicode, line breaks, and whitespace.
 - [ ] Define and implement de-duplication for YouTube's rolling automatic-caption cues.
-- [ ] Implement plain-text rendering as a convenience over normalized segments.
-- [ ] Add table-driven unit tests with at least five relevant cases per new or modified test, including zero/nil-style and malformed cases where applicable.
+- [x] Implement plain-text rendering as a convenience over normalized segments.
+- [x] Add table-driven unit tests with at least five relevant cases per new or modified test, including zero/nil-style and malformed cases where applicable.
 
 ## `yt-dlp` integration
 
@@ -67,7 +67,7 @@ This is the actionable project backlog. Check an item only when its implementati
 
 ## Documentation and release readiness
 
-- [ ] Create PlantUML package/class and acquisition sequence diagrams under `docs/uml`.
+- [x] Create PlantUML package/class and acquisition sequence diagrams under `docs/uml`.
 - [ ] Keep `GOAL.md`, `ROADMAP.md`, `TODO.md`, and `IDEAS.md` aligned with implementation decisions.
 - [ ] Expand the README with the real module path, supported versions, installation, API examples, CLI examples, and limitations.
 - [ ] Document privacy, terms-of-service, copyright, rate-limit, and restricted-video considerations without claiming legal guarantees.
