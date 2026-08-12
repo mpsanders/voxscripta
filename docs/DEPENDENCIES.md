@@ -34,12 +34,15 @@ here and in `TEST_VIDEOS.md`. Security fixes can supersede a known-good version;
 do not recommend a vulnerable pin merely to preserve extraction behavior.
 
 `ffmpeg` is not required for caption-only or audio-acquisition operation. The
-speech-to-text fallback's `YTDLPAudioSource` uses `yt-dlp` for checked audio
-acquisition. The planned policy is for FFmpeg to remain an optional, explicitly
-detected dependency and run only when the configured transcriber cannot consume
-the downloaded audio directly. Milestone 5 includes `whisper.cpp` and
-hosted-provider prototypes to determine that boundary before
-a production adapter contract is fixed.
+speech-to-text fallback's `YTDLPAudioSource` uses `yt-dlp` for checked audio.
+The optional `WhisperCPPTranscriber` requires a `whisper-cli` executable and a
+caller-selected GGML model. It passes verified mono 16 kHz 16-bit PCM WAV
+through unchanged and invokes the configured FFmpeg executable for other input.
+Use `--whisper-model` to enable this chain in the CLI; the library uses
+`NewWhisperCPPTranscriber`. Current setup guidance is maintained by the
+upstream whisper.cpp project. Real-runtime compatibility has not yet been
+validated in this repository; the adapter currently has offline fake-process
+coverage only.
 
 ## Supported platforms
 

@@ -26,6 +26,7 @@ func TestCLISmoke(t *testing.T) {
 		{name: "dependency check", mode: "success", args: []string{"--check"}, wantStdout: "yt-dlp 2026.07.04 ready\n"},
 		{name: "JSON output", mode: "success", args: []string{"--format", "json", "abcdefghijk"}, wantStdout: `"end": "1s"`},
 		{name: "manual only", mode: "success", args: []string{"--manual-only", "abcdefghijk"}, wantStdout: "Hello world\n"},
+		{name: "local speech fallback", mode: "speech", args: []string{"--whisper-model", "model.bin", "--max-audio-duration", "0", "abcdefghijk"}, wantStdout: "Spoken words\n"},
 		{name: "missing dependency", args: []string{"--yt-dlp", filepath.Join(t.TempDir(), "missing"), "abcdefghijk"}, wantCode: 3, wantStderr: "missing dependency"},
 		{name: "unavailable transcript", mode: "unavailable", args: []string{"abcdefghijk"}, wantCode: 4, wantStderr: "transcript unavailable"},
 		{name: "malformed metadata", mode: "malformed", args: []string{"abcdefghijk"}, wantCode: 1, wantStderr: "provider failure"},
@@ -35,6 +36,9 @@ func TestCLISmoke(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			args := append([]string{"--yt-dlp", providerPath}, test.args...)
+			if test.mode == "speech" {
+				args = append([]string{"--yt-dlp", providerPath, "--ffmpeg", providerPath, "--whisper-cli", providerPath}, test.args...)
+			}
 			if test.name == "missing dependency" {
 				args = test.args
 			}
@@ -99,11 +103,20 @@ import ("fmt"; "os"; "path/filepath"; "strings")
 func main() {
  mode := os.Getenv("VOXSCRIPTA_FAKE_MODE")
  args := os.Args[1:]
+ for i, arg := range args { if arg == "--output-file" && i+1 < len(args) {
+  if err := os.WriteFile(args[i+1]+".json", []byte("{\"result\":{\"language\":\"en\"},\"transcription\":[{\"offsets\":{\"from\":0,\"to\":100},\"text\":\"Spoken words\"}]}"), 0600); err != nil { panic(err) }
+  return
+ } }
+ for _, arg := range args { if arg == "-c:a" {
+  if err := os.WriteFile(args[len(args)-1], []byte("normalized"), 0600); err != nil { panic(err) }
+  return
+ } }
  for _, arg := range args { if arg == "--version" { fmt.Println("2026.07.04"); return } }
  for _, arg := range args { if arg == "--dump-single-json" {
   if mode == "failure" { fmt.Fprintln(os.Stderr, "upstream failed"); os.Exit(1) }
   if mode == "malformed" { fmt.Print("{"); return }
   if mode == "unavailable" { fmt.Print("{\"id\":\"abcdefghijk\"}"); return }
+  if mode == "speech" { fmt.Print("{\"id\":\"abcdefghijk\",\"duration\":1}"); return }
   fmt.Print("{\"id\":\"abcdefghijk\",\"title\":\"Example\",\"language\":\"en\",\"subtitles\":{\"en\":[{\"ext\":\"vtt\",\"name\":\"English\",\"url\":\"https://example.invalid/caption\"}]}}"); return
  } }
  for i, arg := range args { if arg == "--output" && i+1 < len(args) {

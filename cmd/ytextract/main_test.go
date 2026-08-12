@@ -29,6 +29,8 @@ func TestRunWithoutAcquisition(t *testing.T) {
 		{name: "multiple videos", args: []string{"dQw4w9WgXcQ", "aqz-KE-bpKQ"}, wantCode: 2, wantStderr: "usage:"},
 		{name: "unsupported format", args: []string{"--format", "xml", "dQw4w9WgXcQ"}, wantCode: 2, wantStderr: "usage:"},
 		{name: "zero timeout", args: []string{"--timeout", "0s", "dQw4w9WgXcQ"}, wantCode: 2, wantStderr: "usage:"},
+		{name: "negative audio duration", args: []string{"--max-audio-duration", "-1s", "dQw4w9WgXcQ"}, wantCode: 2, wantStderr: "usage:"},
+		{name: "negative audio bytes", args: []string{"--max-audio-bytes", "-1", "dQw4w9WgXcQ"}, wantCode: 2, wantStderr: "usage:"},
 		{name: "invalid duration", args: []string{"--timeout", "later", "dQw4w9WgXcQ"}, wantCode: 2, wantStderr: "invalid value"},
 		{name: "empty language", args: []string{"--language", "", "dQw4w9WgXcQ"}, wantCode: 2, wantStderr: "language must not be empty"},
 		{name: "invalid video", args: []string{"invalid"}, wantCode: 2, wantStderr: "invalid input"},
@@ -46,6 +48,35 @@ func TestRunWithoutAcquisition(t *testing.T) {
 			}
 			if !strings.Contains(stderr.String(), test.wantStderr) {
 				t.Errorf("stderr = %q, want substring %q", stderr.String(), test.wantStderr)
+			}
+		})
+	}
+}
+
+// TestNewClient verifies that local speech fallback is enabled only by an
+// explicit model while preserving constructor validation.
+func TestNewClient(t *testing.T) {
+	tests := []struct {
+		name        string
+		model       string
+		maxDuration time.Duration
+		maxBytes    int64
+		wantErr     error
+	}{
+		{name: "caption only"},
+		{name: "whitespace model remains caption only", model: " "},
+		{name: "speech enabled", model: "model.bin", maxDuration: time.Hour, maxBytes: 10},
+		{name: "zero speech limits", model: "model.bin"},
+		{name: "negative duration accepted by construction and rejected on use", model: "model.bin", maxDuration: -1},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			client, err := newClient("yt-dlp", "whisper-cli", test.model, "ffmpeg", test.maxDuration, test.maxBytes)
+			if !errors.Is(err, test.wantErr) {
+				t.Fatalf("newClient() error = %v, want %v", err, test.wantErr)
+			}
+			if err == nil && client == nil {
+				t.Fatal("newClient() returned nil client")
 			}
 		})
 	}

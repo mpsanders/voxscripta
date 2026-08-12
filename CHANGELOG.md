@@ -14,6 +14,11 @@ v1.0.0.
 - A `yt-dlp` audio source with duration preflight, isolated temporary storage,
   best-effort transfer-size rejection, strict final-file verification, and
   cancellation cleanup.
+- An opt-in `WhisperCPPTranscriber` with JSON timestamp normalization, verified
+  PCM-WAV passthrough, conditional FFmpeg conversion, bounded path-redacted
+  diagnostics, cancellation, and temporary-artifact cleanup.
+- Explicit CLI local speech fallback through `--whisper-model`, ordered after
+  caption acquisition and protected by duration and byte limits.
 
 ### Security
 

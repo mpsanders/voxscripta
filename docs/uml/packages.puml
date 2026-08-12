@@ -11,6 +11,7 @@ package "transcript (public)" {
   interface AudioSource
   class YTDLPAudioSource
   interface Transcriber
+  class WhisperCPPTranscriber
   class Audio
   class Options
   class WebVTTParser
@@ -27,7 +28,6 @@ package "internal/ytdlp" {
 package "planned Milestone 5 adapters" #EEEEEE {
   interface AudioProcessor <<decision pending>>
   class FFmpegProcessor <<conditional, planned>>
-  class WhisperCPPTranscriber <<prototype planned>>
   class HostedTranscriber <<prototype planned>>
 }
 

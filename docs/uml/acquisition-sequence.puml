@@ -7,7 +7,7 @@ participant "SpeechToTextProvider" as Speech
 participant "yt-dlp process" as YTDLP
 participant "WebVTT parser" as Parser
 participant "yt-dlp audio source" as AudioSource
-participant "configured transcriber\n(adapter planned)" as Transcriber
+participant "configured transcriber\n(whisper.cpp available)" as Transcriber
 
 Caller -> API: Get(ctx, input, options)
 API -> API: parse video ID

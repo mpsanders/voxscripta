@@ -144,10 +144,13 @@ and file-size limits, closes audio after transcription, and surfaces closure
 failures. The concrete `YTDLPAudioSource` now rejects unknown/live or known over-limit
 durations before downloading, asks `yt-dlp` to reject known oversized files,
 strictly verifies the resulting file, and owns isolated temporary artifacts
-until the audio stream is closed.
-No concrete transcription adapter has been selected; cost and
-concurrency limits, partial-result policy, and end-to-end adapter cleanup tests
-remain pending evaluation.
+until the audio stream is closed. An opt-in `WhisperCPPTranscriber` now stages
+audio, verifies compatible PCM WAV or conditionally converts with FFmpeg,
+normalizes JSON segments, bounds diagnostics, honors cancellation, and cleans
+its workspace. The CLI composes captions then local speech when a model is
+explicitly supplied. Offline behavior is tested, but live whisper.cpp model
+evaluation, the hosted prototype, richer provenance, completeness policy, and
+full process-level fallback tests remain pending.
 
 Extend coverage without making heavy dependencies part of the core caption path.
 
@@ -192,6 +195,11 @@ Completed foundations:
   transfer-size rejection, strict final-size verification, offline fake-process
   coverage, and an opt-in live suite validated with `yt-dlp 2026.07.04` on
   2026-08-13.
+- Implement an explicitly configured local whisper.cpp adapter with verified
+  compatible-WAV passthrough, conditional FFmpeg conversion, normalized JSON
+  timestamps, bounded path-redacted diagnostics, and workspace cleanup.
+- Compose caption-first local speech fallback in the CLI only when a model is
+  explicitly selected, with two-hour and 200 MiB default audio guards.
 
 Exit criteria:
 

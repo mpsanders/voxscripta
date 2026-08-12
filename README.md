@@ -9,8 +9,9 @@
 VoxScripta is a library-first Go toolkit for acquiring normalized, timestamped transcripts from public YouTube videos. A small CLI is included as a development, testing, and diagnostic harness over the same public API.
 
 > **Status:** caption-first development release. Caption discovery, selection,
-> retrieval, WebVTT normalization, and a checked audio source are implemented.
-> No concrete speech transcriber is included, so the CLI remains caption-only.
+> retrieval, WebVTT normalization, checked audio acquisition, and an opt-in
+> local `whisper.cpp` adapter are implemented. The adapter has comprehensive
+> offline tests but has not yet been validated against a real local runtime.
 > Public APIs may change before v1.
 
 ## Why this project exists
@@ -40,7 +41,9 @@ dependency. The public `AudioSource` and `Transcriber` contracts are
 separate, and `SpeechToTextProvider` composes them while enforcing optional
 duration/file-size limits and closing acquired audio on every post-acquisition
 path. Cleanup failures are returned. `YTDLPAudioSource` is the concrete audio
-acquisition adapter; no concrete transcriber is included yet.
+acquisition adapter. `WhisperCPPTranscriber` passes verified mono 16 kHz 16-bit
+PCM WAV through unchanged and uses FFmpeg for other input before consuming
+`whisper-cli` JSON output.
 
 ## Architecture
 
@@ -127,6 +130,7 @@ ytextract --timeout 30s VIDEO_URL
 ytextract --manual-only VIDEO_URL
 ytextract --check
 ytextract --check --yt-dlp /path/to/yt-dlp
+ytextract --whisper-model /path/to/ggml-base.bin VIDEO_URL
 ```
 
 Transcript data will be written to stdout and diagnostics to stderr so the command can be composed with other tools.
@@ -137,6 +141,12 @@ CLI JSON uses human-readable Go duration strings such as `"0s"`, `"1.25s"`,
 and `"2m3s"` for segment timestamps. It retains the transcript's video,
 language, source, provider, and segment structure.
 
+Supplying `--whisper-model` explicitly enables `captions -> local whisper.cpp`.
+The `--whisper-cli`, `--ffmpeg`, `--max-audio-duration` (default 2h), and
+`--max-audio-bytes` (default 200 MiB) flags configure that fallback. No model is
+inferred or downloaded, and no hosted provider is enabled from ambient
+credentials.
+
 `--check` verifies that the configured `yt-dlp` executable starts and reports
 its version. It performs no video or network acquisition.
 
@@ -145,9 +155,9 @@ its version. It performs no video or network acquisition.
 The caption provider requires a compatible `yt-dlp` executable available on `PATH` or supplied explicitly in configuration.
 
 The library will not silently install external tools. Speech-to-text audio
-acquisition uses the same caller-installed `yt-dlp`. A future concrete
-transcriber may also require `ffmpeg`, a local model/runtime, or credentials
-for a remote service, but those dependencies will remain optional and explicit.
+acquisition uses the same caller-installed `yt-dlp`. The optional whisper.cpp
+adapter requires `whisper-cli`, a caller-selected GGML model, and FFmpeg unless
+the input is verified as compatible PCM WAV.
 
 The speech-to-text composition API is transcriber-neutral. Construct a
 `YTDLPAudioSource` with `NewYTDLPAudioSource`, then configure it on
@@ -166,7 +176,8 @@ The current public composition is explicit: create the ordinary caption client,
 use it as `FallbackProvider.Primary`, use a configured `SpeechToTextProvider`
 as `Fallback`, and install that chain in an outer client. The fallback runs only
 for `ErrTranscriptUnavailable`. A compile-tested offline example is included;
-the CLI does not enable this chain until a concrete transcriber is selected.
+the CLI enables the local chain only when `--whisper-model` explicitly selects
+it.
 
 ```go
 captions, err := transcript.New(transcript.WithYTDLPPath("yt-dlp"))

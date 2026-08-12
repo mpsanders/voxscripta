@@ -107,21 +107,21 @@ adapter integration before the acquisition and prototype evidence it depends on.
 - [ ] Prototype `whisper.cpp` and record executable/model setup, required input format, file-path requirements, timestamp quality, cancellation, portability, privacy, accuracy, and resource use.
 - [ ] Prototype one hosted transcription provider, initially OpenAI unless evaluation selects another reference, and record accepted formats, upload/size limits, timestamps, cancellation, privacy, accuracy, latency, and cost.
 - [ ] Compare the prototypes in a checked-in evaluation record using representative legal audio fixtures.
-- [ ] Decide and record whether FFmpeg conversion belongs inside an audio source or behind a separate audio-processor interface.
-- [ ] Document and test passthrough when downloaded audio is already compatible; require FFmpeg only for adapters that need conversion.
+- [x] Decide and record whether FFmpeg conversion belongs inside an audio source or behind a separate audio-processor interface; decision 0008 keeps it inside the whisper.cpp adapter until another adapter demonstrates a shared boundary.
+- [x] Document and test passthrough when downloaded audio is already compatible; require FFmpeg only for adapters that need conversion.
 
 ### 4. Production transcription adapter
 
-- [ ] Implement at least one separately configured transcriber adapter and normalize its output into `Transcription` segments.
+- [x] Implement an explicitly configured `WhisperCPPTranscriber` and normalize its JSON output into `Transcription` segments; live-runtime qualification remains part of the prototype task above.
 - [ ] Add adapter-aware cost and concurrency limits after selecting the production adapter.
-- [ ] Bound and redact adapter diagnostics, credentials, request details, and temporary paths.
-- [ ] Guarantee adapter and conversion temp-file cleanup on success, failure, and cancellation; the provider-level audio stream is already closed on all post-acquisition paths.
+- [x] Bound whisper.cpp/FFmpeg diagnostics and redact temporary paths; hosted credential/request redaction remains adapter-specific future work.
+- [x] Guarantee whisper.cpp staging and conversion temp-file cleanup on success, failure, and cancellation; the provider-level audio stream is already closed on all post-acquisition paths.
 
 ### 5. End-to-end fallback completion
 
-- [ ] Define and document whether partial transcription results are returned or discarded on provider failure or cancellation.
-- [ ] Compose the concrete speech-to-text provider with `FallbackProvider` without changing caption-first defaults.
+- [x] Define and document that partial whisper.cpp results are discarded on provider failure or cancellation.
+- [x] Compose the concrete speech-to-text provider with `FallbackProvider` without changing caption-first defaults; the CLI enables it only with `--whisper-model`.
 - [ ] Test no-caption fallback, transcription failure, cancellation, duration/size/cost limits, partial-result policy, and cleanup across acquisition, optional conversion, and transcription.
 - [ ] Define measurable transcript completeness/coverage and the policy for accepting, replacing, comparing, or merging incomplete captions with speech-to-text.
 - [ ] Expose deterministic caller-selected provider ordering and provenance for every acquisition/conversion/transcription stage.
-- [ ] Make the CLI try captions and every locally available or explicitly enabled transcription strategy; never infer permission for hosted cost/audio disclosure from ambient credentials alone.
+- [x] Make the CLI try captions then the explicitly enabled local whisper.cpp strategy; never infer permission for hosted cost/audio disclosure from ambient credentials alone. Additional adapters must join this ordering when implemented.

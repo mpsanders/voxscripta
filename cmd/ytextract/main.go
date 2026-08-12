@@ -50,6 +50,11 @@ func run(args []string, stdout, stderr io.Writer) int {
 	format := flags.String("format", "text", "output format: text or json")
 	timeout := flags.Duration("timeout", 30*time.Second, "acquisition timeout")
 	ytdlpPath := flags.String("yt-dlp", "yt-dlp", "yt-dlp executable path")
+	whisperModel := flags.String("whisper-model", "", "enable local speech fallback with this whisper.cpp model")
+	whisperPath := flags.String("whisper-cli", "whisper-cli", "whisper.cpp executable path")
+	ffmpegPath := flags.String("ffmpeg", "ffmpeg", "FFmpeg executable path for non-WAV speech audio")
+	maxAudioDuration := flags.Duration("max-audio-duration", 2*time.Hour, "maximum speech-fallback audio duration (0 disables)")
+	maxAudioBytes := flags.Int64("max-audio-bytes", 200<<20, "maximum speech-fallback audio bytes (0 disables)")
 	manualOnly := flags.Bool("manual-only", false, "exclude automatic captions")
 	var languages languagesFlag
 	flags.Var(&languages, "language", "preferred caption language (repeatable)")
@@ -67,11 +72,11 @@ func run(args []string, stdout, stderr io.Writer) int {
 		}
 		return checkYTDLP(*ytdlpPath, *timeout, stdout, stderr)
 	}
-	if flags.NArg() != 1 || (*format != "text" && *format != "json") || *timeout <= 0 {
+	if flags.NArg() != 1 || (*format != "text" && *format != "json") || *timeout <= 0 || *maxAudioDuration < 0 || *maxAudioBytes < 0 {
 		fmt.Fprintln(stderr, "usage: ytextract [options] VIDEO_URL_OR_ID")
 		return 2
 	}
-	client, err := transcript.New(transcript.WithYTDLPPath(*ytdlpPath))
+	client, err := newClient(*ytdlpPath, *whisperPath, *whisperModel, *ffmpegPath, *maxAudioDuration, *maxAudioBytes)
 	if err != nil {
 		fmt.Fprintln(stderr, err)
 		return exitCode(err)
@@ -99,6 +104,27 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 	return 0
+}
+
+// newClient constructs the caption-first CLI provider chain. A non-empty
+// whisperModel explicitly enables local speech-to-text fallback; otherwise the
+// CLI retains its caption-only behavior and runtime dependencies.
+func newClient(ytdlpPath, whisperPath, whisperModel, ffmpegPath string, maxAudioDuration time.Duration, maxAudioBytes int64) (*transcript.Client, error) {
+	captions, err := transcript.New(transcript.WithYTDLPPath(ytdlpPath))
+	if err != nil || strings.TrimSpace(whisperModel) == "" {
+		return captions, err
+	}
+	transcriber, err := transcript.NewWhisperCPPTranscriber(whisperPath, whisperModel, ffmpegPath)
+	if err != nil {
+		return nil, err
+	}
+	speech := transcript.SpeechToTextProvider{
+		AudioSource: transcript.NewYTDLPAudioSource(ytdlpPath),
+		Transcriber: transcriber,
+		MaxDuration: maxAudioDuration,
+		MaxBytes:    maxAudioBytes,
+	}
+	return transcript.New(transcript.WithProvider(transcript.FallbackProvider{Primary: captions, Fallback: speech}))
 }
 
 type jsonSegment struct {
