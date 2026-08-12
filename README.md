@@ -133,13 +133,19 @@ The result will report what was actually selected.
 
 Development requires Go 1.25 or 1.26. The normalized core has no external runtime dependency. Caption acquisition will require a caller-installed `yt-dlp`; see [runtime dependencies](docs/DEPENDENCIES.md).
 
-Once code exists, the baseline development checks will include:
+The repository Makefile provides the common development commands:
 
 ```console
-gofmt -w .
-go test ./...
-go vet ./...
+make build
+make test
+make vet
+make run ARGS="--version"
+make check
 ```
+
+Run `make help` for the complete target list, including formatting, race testing,
+module tidying, and cleanup. `make check` performs the same core checks expected
+before submitting a change.
 
 Network-dependent `yt-dlp` tests will be opt-in so the normal unit-test suite remains fast and deterministic.
 

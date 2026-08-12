@@ -8,11 +8,13 @@ API or provider changes before implementation and keep changes focused.
 Install a supported Go toolchain, then run:
 
 ```console
-gofmt -w .
-go test ./...
-go vet ./...
-go test -race ./...
+make check
+make race
 ```
+
+Use `make help` to list individual targets. The CLI can be built with
+`make build` or run directly with options, for example
+`make run ARGS="--version"`.
 
 Ordinary tests must remain offline and deterministic. Live YouTube and
 `yt-dlp` integration tests must be opt-in and skip with a clear reason when a

@@ -10,6 +10,7 @@ This is the actionable project backlog. Check an item only when its implementati
 - [x] Create the initial layout: public package, focused `internal` packages, `cmd/<name>`, fixtures, examples, and `docs/uml`.
 - [x] Add a license and contribution guidance.
 - [x] Add CI for build, test, `go vet`, formatting checks, and the supported OS matrix.
+- [x] Add a Makefile for the common build, run, test, vet, formatting, and module checks.
 - [x] Document how contributors install and verify `yt-dlp` without having the library install it.
 - [ ] Select stable public test videos representing manual captions, automatic captions, multiple languages, and no captions; record why each is safe to use.
 - [ ] Capture representative, sanitized `yt-dlp` JSON and subtitle fixtures for offline tests.
