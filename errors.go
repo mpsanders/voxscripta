@@ -13,4 +13,6 @@ var (
 	ErrUnsupportedFormat = errors.New("unsupported format")
 	// ErrProviderFailure indicates that an acquisition provider failed unexpectedly.
 	ErrProviderFailure = errors.New("provider failure")
+	// ErrLimitExceeded indicates that configured resource limits prevented acquisition.
+	ErrLimitExceeded = errors.New("limit exceeded")
 )

@@ -33,7 +33,12 @@ offline fixtures, rerun the full matrix, and record the newly validated version
 here and in `TEST_VIDEOS.md`. Security fixes can supersede a known-good version;
 do not recommend a vulnerable pin merely to preserve extraction behavior.
 
-`ffmpeg` is not required for caption-only operation.
+`ffmpeg` is not required for caption-only operation. The planned speech-to-text
+fallback will use `yt-dlp` for bounded audio acquisition. FFmpeg will remain an
+optional, explicitly detected dependency and will run only when the configured
+transcriber cannot consume the downloaded audio directly. Milestone 5 includes
+`whisper.cpp` and hosted-provider prototypes to determine that boundary before
+a production adapter contract is fixed.
 
 ## Supported platforms
 

@@ -18,7 +18,7 @@ An importing application can:
 - replace or add acquisition providers without changing downstream code; and
 - render the normalized result as plain text or common subtitle formats.
 
-The default implementation should use `yt-dlp` to discover and retrieve existing captions. This delegates the frequently changing YouTube integration to a mature, actively maintained tool. Videos without captions can later be handled through an optional audio-download and speech-to-text provider.
+The default implementation should use `yt-dlp` to discover and retrieve existing captions. This delegates the frequently changing YouTube integration to a mature, actively maintained tool. Videos without captions can later be handled by explicitly configured fallback: `yt-dlp` acquires bounded audio, FFmpeg converts it only when required by the selected backend, and a replaceable local or hosted transcriber produces normalized segments.
 
 ## Product principles
 
@@ -49,6 +49,9 @@ The default implementation should use `yt-dlp` to discover and retrieve existing
 
 - Optional speech-to-text providers for videos without captions.
 - Audio acquisition through `yt-dlp` and conversion through `ffmpeg` where required.
+- Local and hosted transcription adapters kept separate from YouTube-specific
+  acquisition so callers can choose privacy, portability, latency, and cost
+  tradeoffs without changing downstream transcript handling.
 - Additional renderers such as WebVTT, SRT, Markdown, and JSON.
 - Provider diagnostics, caching hooks, and observability.
 - Batch acquisition with caller-controlled concurrency.

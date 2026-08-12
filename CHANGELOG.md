@@ -19,6 +19,9 @@ v1.0.0.
   Makefile.
 - Explicit provider fallback composition that runs only when the primary
   provider reports an unavailable transcript.
+- Separate audio-source and transcriber contracts, plus adapter-neutral
+  speech-to-text composition with duration/file-size guards and guaranteed
+  audio closure.
 
 ### Changed
 

@@ -7,6 +7,10 @@ package "transcript (public)" {
   class Client
   interface Provider
   class FallbackProvider
+  class SpeechToTextProvider
+  interface AudioSource
+  interface Transcriber
+  class Audio
   class Options
   class WebVTTParser
 }
@@ -18,6 +22,14 @@ package "internal/ytdlp" {
   class CaptionTrack
 }
 
+package "planned Milestone 5 adapters" #EEEEEE {
+  class YTDLPAudioSource <<planned>>
+  interface AudioProcessor <<decision pending>>
+  class FFmpegProcessor <<conditional, planned>>
+  class WhisperCPPTranscriber <<prototype planned>>
+  class HostedTranscriber <<prototype planned>>
+}
+
 package "cmd/ytextract" {
   class CLI
 }
@@ -25,6 +37,15 @@ package "cmd/ytextract" {
 CLI --> Provider : calls public API
 Client --> Provider : orchestrates
 FallbackProvider --> Provider : primary then explicit fallback
+FallbackProvider --> SpeechToTextProvider : optional fallback
+SpeechToTextProvider --> AudioSource : acquires bounded audio
+SpeechToTextProvider --> Transcriber : produces segments
+AudioSource --> Audio
+YTDLPAudioSource ..|> AudioSource
+YTDLPAudioSource ..> AudioProcessor : only if boundary adopted
+AudioProcessor <|.. FFmpegProcessor
+WhisperCPPTranscriber ..|> Transcriber
+HostedTranscriber ..|> Transcriber
 Client --> CommandRunner
 Client --> Metadata : inspects
 Metadata *-- CaptionTrack

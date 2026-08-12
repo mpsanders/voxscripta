@@ -136,26 +136,54 @@ Exit criteria:
 ## Milestone 5: Optional speech-to-text fallback
 
 Status: in progress. The provider-level fallback policy is implemented and
-requires explicit composition. It triggers only for unavailable transcripts;
-cancellation, invalid input, dependency errors, and provider failures do not
-start fallback work. Audio and transcription contracts remain pending a
-concrete adapter evaluation.
+requires explicit composition. Separate audio-source and transcriber contracts
+now compose through `SpeechToTextProvider`, which guarantees audio closure and
+enforces configured duration and file-size limits before transcription.
+No concrete audio or transcription adapter has been selected; cost and
+concurrency limits, partial-result policy, and end-to-end adapter cleanup tests
+remain pending evaluation.
 
 Extend coverage without making heavy dependencies part of the core caption path.
 
-Deliverables:
+Implementation sequence:
 
-- Define an audio-source and speech-to-text provider contract.
-- Download bounded audio with `yt-dlp`; use `ffmpeg` only when the chosen provider requires conversion.
-- Add at least one separately configured local or remote transcription adapter.
-- Define fallback policy, cost/size/duration guards, language hints, and progress/diagnostic behavior.
-- Normalize speech-to-text segments into the same `Transcript` model.
+1. **Bounded `yt-dlp` audio acquisition.** Implement an audio source that
+   inspects duration before download, retrieves audio into isolated temporary
+   storage, constrains output size, honors cancellation, and removes all
+   temporary artifacts on success and failure.
+2. **Concrete adapter prototypes.** Prototype local `whisper.cpp` and one
+   hosted transcription service (initially OpenAI unless evaluation identifies
+   a better reference provider). Record accepted formats, path/stream needs,
+   timestamps, limits, cancellation behavior, privacy, portability, accuracy,
+   and cost without treating either prototype as production-ready.
+3. **Audio-processing boundary decision.** Use prototype evidence to decide
+   whether FFmpeg conversion belongs inside the `AudioSource` implementation or
+   behind a separate audio-processor contract. Invoke FFmpeg only when the
+   selected transcriber requires conversion; pass compatible downloaded audio
+   through unchanged.
+4. **Production adapter and safeguards.** Implement at least one separately
+   configured transcriber, normalize its segments, and add adapter-aware cost
+   and concurrency controls plus safe bounded diagnostics.
+5. **End-to-end fallback behavior.** Compose the audio/STT provider with
+   `FallbackProvider`, decide the partial-result policy, and test no-caption
+   fallback, failures, cancellation, resource limits, and cleanup across every
+   stage.
+
+Completed foundations:
+
+- Define separate audio-source and speech-to-text contracts.
+- Define explicit fallback policy, language hints, and provider-level
+  duration/file-size guards.
+- Normalize valid speech-to-text segments into the same `Transcript` model.
 
 Exit criteria:
 
 - Caption retrieval remains the default and has no new mandatory runtime dependency.
 - Callers must explicitly configure or opt into potentially costly speech-to-text work.
-- Tests cover fallback ordering, cancellation, partial output, and cleanup.
+- `yt-dlp` audio acquisition is bounded and temporary artifacts are cleaned up.
+- FFmpeg is required only by configurations whose selected adapter needs it.
+- At least one transcriber adapter has documented compatibility and safeguards.
+- Tests cover fallback ordering, cancellation, limits, partial output, and cleanup.
 
 ## Milestone 6: Ecosystem features
 

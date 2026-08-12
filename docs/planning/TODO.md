@@ -83,11 +83,40 @@ This is the actionable project backlog. Check an item only when its implementati
 
 ## Later: optional speech-to-text
 
+Items below are ordered by implementation dependency; do not begin production
+adapter integration before the acquisition and prototype evidence it depends on.
+
+### 1. Composition foundation
+
 - [x] Define explicit opt-in fallback policies rather than falling back on every provider error; `FallbackProvider` falls back only for `ErrTranscriptUnavailable`.
-- [ ] Separate audio acquisition from transcription provider interfaces.
-- [ ] Add duration, file-size, cost, and concurrency limits.
-- [ ] Evaluate local and hosted speech-to-text providers against timestamps, accuracy, portability, privacy, and cost.
-- [ ] Implement one provider adapter and normalize its output.
-- [ ] Guarantee audio/temp-file cleanup on success, failure, and cancellation.
-- [ ] Document `ffmpeg` only if the selected path requires it.
-- [ ] Test no-caption fallback, transcription failure, cancellation, and partial-result policy.
+- [x] Separate audio acquisition from transcription provider interfaces and compose them through `SpeechToTextProvider`.
+- [x] Add provider-level duration and file-size guards before transcription.
+
+### 2. Bounded `yt-dlp` audio acquisition
+
+- [ ] Inspect video duration before downloading audio and reject configured over-limit inputs before expensive work begins.
+- [ ] Download only audio with `yt-dlp` into isolated temporary storage without shell invocation.
+- [ ] Enforce configured file-size bounds during acquisition where possible and verify the final artifact metadata.
+- [ ] Guarantee downloaded audio and acquisition temp-file cleanup on success, failure, limit rejection, and cancellation.
+- [ ] Add offline fake-process tests and opt-in live tests for audio selection, limits, cancellation, malformed/missing output, and cleanup.
+
+### 3. Transcriber prototypes and architecture decision
+
+- [ ] Prototype `whisper.cpp` and record executable/model setup, required input format, file-path requirements, timestamp quality, cancellation, portability, privacy, accuracy, and resource use.
+- [ ] Prototype one hosted transcription provider, initially OpenAI unless evaluation selects another reference, and record accepted formats, upload/size limits, timestamps, cancellation, privacy, accuracy, latency, and cost.
+- [ ] Compare the prototypes in a checked-in evaluation record using representative legal audio fixtures.
+- [ ] Decide and record whether FFmpeg conversion belongs inside an audio source or behind a separate audio-processor interface.
+- [ ] Document and test passthrough when downloaded audio is already compatible; require FFmpeg only for adapters that need conversion.
+
+### 4. Production transcription adapter
+
+- [ ] Implement at least one separately configured transcriber adapter and normalize its output into `Transcription` segments.
+- [ ] Add adapter-aware cost and concurrency limits after selecting the production adapter.
+- [ ] Bound and redact adapter diagnostics, credentials, request details, and temporary paths.
+- [ ] Guarantee adapter and conversion temp-file cleanup on success, failure, and cancellation; the provider-level audio stream is already closed on all post-acquisition paths.
+
+### 5. End-to-end fallback completion
+
+- [ ] Define and document whether partial transcription results are returned or discarded on provider failure or cancellation.
+- [ ] Compose the concrete speech-to-text provider with `FallbackProvider` without changing caption-first defaults.
+- [ ] Test no-caption fallback, transcription failure, cancellation, duration/size/cost limits, partial-result policy, and cleanup across acquisition, optional conversion, and transcription.

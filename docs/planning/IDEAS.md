@@ -6,7 +6,8 @@ Ideas are deliberately separate from the committed roadmap. Promote an idea only
 
 - A Go-native caption provider as an optional fast path, retaining `yt-dlp` as the compatibility fallback.
 - An authenticated YouTube Data API provider for captions belonging to channels the caller can manage.
-- Adapters for local `whisper.cpp` and hosted transcription services.
+- Additional local and hosted transcription adapters after the Milestone 5
+  `whisper.cpp` and hosted reference prototypes establish the adapter contract.
 - User-supplied provider chains with rules based on language, duration, privacy, latency, or cost.
 - Provider capability discovery so applications can explain what is available before acquisition.
 - Cookies, proxy, and custom HTTP transport support through explicit secure configuration.
@@ -57,3 +58,10 @@ Ideas are deliberately separate from the committed roadmap. Promote an idea only
 - What minimum `yt-dlp` version can be supported without creating brittle version branches?
 - How much provider diagnostic metadata can be retained without leaking ephemeral signed URLs or credentials?
 - Does a streaming API provide meaningful value when `yt-dlp` discovery and caption retrieval are naturally whole-result operations?
+- Can downloaded audio be passed directly to each reference transcriber, or is
+  FFmpeg conversion required for correctness or predictable performance?
+- Do local file-oriented and hosted stream-oriented transcribers justify a
+  separate audio-processor/artifact contract, or can conversion remain an
+  implementation detail of the audio source?
+- What partial-result behavior can be represented consistently across local
+  process cancellation and hosted request failures?

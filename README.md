@@ -37,7 +37,10 @@ its fallback only when the primary provider reports
 `ErrTranscriptUnavailable`; it does not turn cancellation, invalid input,
 missing dependencies, or provider failures into additional work. A future
 speech-to-text adapter can use this composition without becoming a core
-runtime dependency.
+runtime dependency. The public `AudioSource` and `Transcriber` contracts are
+separate, and `SpeechToTextProvider` composes them while enforcing optional
+duration/file-size limits and closing acquired audio on every post-acquisition
+path. No concrete adapter is included yet.
 
 ## Architecture
 
@@ -59,7 +62,7 @@ Importing Go application                Development CLI
              timestamped Transcript result
 
 Later, when explicitly configured:
-no captions -> audio acquisition -> speech-to-text provider -> normalize
+no captions -> AudioSource -> bounded Audio -> Transcriber -> normalize
 ```
 
 The CLI will remain a thin API consumer. Extraction logic will not live in `cmd/`.
@@ -142,6 +145,11 @@ its version. It performs no video or network acquisition.
 The caption provider requires a compatible `yt-dlp` executable available on `PATH` or supplied explicitly in configuration.
 
 The library will not silently install external tools. A future speech-to-text fallback may also require `ffmpeg`, a local model/runtime, or credentials for a remote service, but those dependencies will remain optional and explicit.
+
+The speech-to-text composition API is currently adapter-neutral. Duration and
+file-size limits can be configured on `SpeechToTextProvider`; cost and
+concurrency controls will be designed with the first concrete adapter rather
+than represented by misleading generic fields.
 
 ## Expected caption preference
 
