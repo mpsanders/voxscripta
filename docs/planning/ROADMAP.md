@@ -135,6 +135,12 @@ Exit criteria:
 
 ## Milestone 5: Optional speech-to-text fallback
 
+Status: in progress. The provider-level fallback policy is implemented and
+requires explicit composition. It triggers only for unavailable transcripts;
+cancellation, invalid input, dependency errors, and provider failures do not
+start fallback work. Audio and transcription contracts remain pending a
+concrete adapter evaluation.
+
 Extend coverage without making heavy dependencies part of the core caption path.
 
 Deliverables:

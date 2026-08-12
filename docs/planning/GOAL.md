@@ -13,7 +13,7 @@ An importing application can:
 - pass a YouTube video URL or ID and a `context.Context`;
 - express language and caption-source preferences;
 - receive a stable `Transcript` containing metadata and ordered timestamped segments;
-- distinguish manual captions, automatic captions, translated captions, and speech-to-text output;
+- distinguish manual captions, automatic captions, and speech-to-text output;
 - handle predictable, inspectable errors;
 - replace or add acquisition providers without changing downstream code; and
 - render the normalized result as plain text or common subtitle formats.

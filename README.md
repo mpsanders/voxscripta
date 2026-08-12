@@ -32,6 +32,13 @@ YouTube's unofficial extraction surfaces change frequently. Instead of embedding
 - Expose useful errors for missing dependencies, invalid input, and unavailable transcripts.
 - Permit custom acquisition providers without forcing them on ordinary users.
 
+Optional provider fallback is explicit. `transcript.FallbackProvider` invokes
+its fallback only when the primary provider reports
+`ErrTranscriptUnavailable`; it does not turn cancellation, invalid input,
+missing dependencies, or provider failures into additional work. A future
+speech-to-text adapter can use this composition without becoming a core
+runtime dependency.
+
 ## Architecture
 
 The public package owns domain types, options, orchestration, and stable behavior. Provider-specific details remain internal or behind narrow interfaces.

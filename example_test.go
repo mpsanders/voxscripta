@@ -12,6 +12,14 @@ import (
 
 type exampleProvider struct{}
 
+type unavailableExampleProvider struct{}
+
+// Get reports that no transcript is available so the fallback example remains
+// deterministic and offline.
+func (unavailableExampleProvider) Get(context.Context, string, transcript.Options) (transcript.Transcript, error) {
+	return transcript.Transcript{}, transcript.ErrTranscriptUnavailable
+}
+
 // Get returns a deterministic transcript so examples remain offline and show
 // how an application can supply its own acquisition provider.
 func (exampleProvider) Get(_ context.Context, videoID string, options transcript.Options) (transcript.Transcript, error) {
@@ -67,6 +75,19 @@ func ExampleWithProvider() {
 	client, err := transcript.New(transcript.WithProvider(exampleProvider{}))
 	fmt.Println(err == nil, client != nil)
 	// Output: true true
+}
+
+// ExampleFallbackProvider demonstrates explicitly opting into a secondary
+// provider for videos whose primary provider has no transcript.
+func ExampleFallbackProvider() {
+	provider := transcript.FallbackProvider{
+		Primary:  unavailableExampleProvider{},
+		Fallback: exampleProvider{},
+	}
+	client, _ := transcript.New(transcript.WithProvider(provider))
+	result, _ := client.Get(context.Background(), "dQw4w9WgXcQ", transcript.Options{})
+	fmt.Println(result.Text())
+	// Output: Hello, world.
 }
 
 // ExampleParseWebVTT demonstrates parsing subtitle data independently of any

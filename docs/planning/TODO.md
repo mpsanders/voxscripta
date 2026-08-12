@@ -83,7 +83,7 @@ This is the actionable project backlog. Check an item only when its implementati
 
 ## Later: optional speech-to-text
 
-- [ ] Define explicit opt-in fallback policies rather than falling back on every provider error.
+- [x] Define explicit opt-in fallback policies rather than falling back on every provider error; `FallbackProvider` falls back only for `ErrTranscriptUnavailable`.
 - [ ] Separate audio acquisition from transcription provider interfaces.
 - [ ] Add duration, file-size, cost, and concurrency limits.
 - [ ] Evaluate local and hosted speech-to-text providers against timestamps, accuracy, portability, privacy, and cost.

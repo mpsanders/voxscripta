@@ -6,6 +6,7 @@ package "transcript (public)" {
   class Segment
   class Client
   interface Provider
+  class FallbackProvider
   class Options
   class WebVTTParser
 }
@@ -23,6 +24,7 @@ package "cmd/ytextract" {
 
 CLI --> Provider : calls public API
 Client --> Provider : orchestrates
+FallbackProvider --> Provider : primary then explicit fallback
 Client --> CommandRunner
 Client --> Metadata : inspects
 Metadata *-- CaptionTrack

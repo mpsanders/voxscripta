@@ -4,9 +4,7 @@ All notable changes will be documented here. The project follows Semantic
 Versioning once a release is published; compatibility is not promised before
 v1.0.0.
 
-## Unreleased
-
-Planned version: v0.1.0.
+## [0.1.0] - 2026-08-12
 
 ### Added
 
@@ -19,6 +17,8 @@ Planned version: v0.1.0.
 - Offline unit and process-level smoke tests plus opt-in live integration tests.
 - Pinned Staticcheck and govulncheck release-hardening gates in CI and the
   Makefile.
+- Explicit provider fallback composition that runs only when the primary
+  provider reports an unavailable transcript.
 
 ### Changed
 
