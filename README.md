@@ -1,8 +1,8 @@
 # YouTube Transcript Extractor
 
-YouTube Transcript Extractor is a planned library-first Go toolkit for acquiring normalized, timestamped transcripts from public YouTube videos. A small CLI will be included as a development, testing, and diagnostic harness over the same public API.
+VoxScripta is a library-first Go toolkit for acquiring normalized, timestamped transcripts from public YouTube videos. A small CLI is included as a development, testing, and diagnostic harness over the same public API.
 
-> **Status:** design and planning. The Go module and public API have not been implemented yet, so the examples below describe the intended direction and may change before the first release.
+> **Status:** early development. The normalized domain model, validation, errors, provider contract, and YouTube URL/ID parsing are implemented. Caption parsing and `yt-dlp` acquisition are next. Public APIs may change before v1.
 
 ## Why this project exists
 
@@ -49,7 +49,7 @@ The CLI will remain a thin API consumer. Extraction logic will not live in `cmd/
 
 ## Proposed library usage
 
-The module path and final names are still to be chosen. Expected usage will resemble:
+The module is `github.com/mpsanders/VoxScripta` and its public package name is `transcript`. Acquisition usage is expected to resemble the following once the default client is implemented:
 
 ```go
 client, err := transcript.New(
@@ -83,7 +83,7 @@ Exact exported types will be finalized before implementation is declared stable.
 
 ## Proposed CLI usage
 
-The command name is not final. The development harness is expected to support workflows like:
+The development command is `ytextract`. Transcript acquisition flags are planned to support workflows like:
 
 ```console
 ytextract --language en-AU --language en VIDEO_URL
@@ -122,7 +122,7 @@ The result will report what was actually selected.
 
 ## Development
 
-The repository currently contains planning material only. Implementation will begin by choosing the module path and package/CLI names, initializing the Go module, and building the normalized model and subtitle parser with offline fixtures.
+Development requires Go 1.25 or 1.26. The normalized core has no external runtime dependency. Caption acquisition will require a caller-installed `yt-dlp`; see [runtime dependencies](docs/DEPENDENCIES.md).
 
 Once code exists, the baseline development checks will include:
 
@@ -136,11 +136,11 @@ Network-dependent `yt-dlp` tests will be opt-in so the normal unit-test suite re
 
 ## Project direction
 
-- [Goal](planning/GOAL.md) describes the north star, scope, and completion criteria.
-- [Roadmap](planning/ROADMAP.md) defines implementation milestones and exit criteria.
-- [TODO](planning/TODO.md) is the actionable backlog.
-- [Ideas](planning/IDEAS.md) holds possible future work that is not yet committed.
-- [Design conversation](planning/YouTube%20Transcript%20Extraction%20Methods.md) records the initial exploration of extraction approaches.
+- [Goal](docs/planning/GOAL.md) describes the north star, scope, and completion criteria.
+- [Roadmap](docs/planning/ROADMAP.md) defines implementation milestones and exit criteria.
+- [TODO](docs/planning/TODO.md) is the actionable backlog.
+- [Ideas](docs/planning/IDEAS.md) holds possible future work that is not yet committed.
+- [Design conversation](docs/planning/YouTube%20Transcript%20Extraction%20Methods.md) records the initial exploration of extraction approaches.
 
 ## Contributing
 
@@ -148,4 +148,4 @@ The public API is intentionally not fixed yet. Early contributions should align 
 
 ## License
 
-No license has been selected yet. Until one is added, no permission to copy, modify, or redistribute the project is granted beyond rights provided by applicable law.
+VoxScripta is available under the [MIT License](LICENSE).

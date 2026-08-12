@@ -1,0 +1,24 @@
+@startuml
+skinparam packageStyle rectangle
+
+package "transcript (public)" {
+  class Transcript
+  class Segment
+  interface Provider
+  class Options
+}
+
+package "internal/ytdlp" {
+  class ProviderImpl
+  interface CommandRunner
+}
+
+package "cmd/ytextract" {
+  class CLI
+}
+
+CLI --> Provider : calls public API
+ProviderImpl ..|> Provider
+ProviderImpl --> CommandRunner
+Transcript *-- Segment
+@enduml

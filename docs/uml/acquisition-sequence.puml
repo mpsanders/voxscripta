@@ -1,0 +1,20 @@
+@startuml
+actor Caller
+participant "transcript API" as API
+participant "yt-dlp provider" as Provider
+participant "yt-dlp process" as YTDLP
+participant "WebVTT parser" as Parser
+
+Caller -> API: Get(ctx, input, options)
+API -> API: parse video ID
+API -> Provider: Get(ctx, videoID, options)
+Provider -> YTDLP: inspect machine-readable metadata
+YTDLP --> Provider: available caption tracks
+Provider -> Provider: select one track
+Provider -> YTDLP: retrieve selected WebVTT track
+YTDLP --> Provider: subtitle data
+Provider -> Parser: parse and normalize
+Parser --> Provider: ordered segments
+Provider --> API: Transcript
+API --> Caller: Transcript
+@enduml
