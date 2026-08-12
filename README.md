@@ -1,4 +1,10 @@
-# YouTube Transcript Extractor
+<p align="center">
+  <img src="docs/assets/voxscripta-logo.png" alt="VoxScripta logo" width="180">
+</p>
+
+<h1 align="center">VoxScripta</h1>
+
+<p align="center"><strong>YouTube Transcript Extractor</strong></p>
 
 VoxScripta is a library-first Go toolkit for acquiring normalized, timestamped transcripts from public YouTube videos. A small CLI is included as a development, testing, and diagnostic harness over the same public API.
 
