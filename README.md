@@ -147,6 +147,7 @@ The repository Makefile provides the common development commands:
 ```console
 make build
 make test
+make integration
 make vet
 make run ARGS="--version"
 make check
@@ -157,6 +158,8 @@ module tidying, and cleanup. `make check` performs the same core checks expected
 before submitting a change.
 
 Network-dependent `yt-dlp` tests will be opt-in so the normal unit-test suite remains fast and deterministic.
+Run them explicitly with `make integration`; this requires `yt-dlp` on `PATH`
+and public network access. `make test` continues to skip the live suite.
 
 ## Project direction
 

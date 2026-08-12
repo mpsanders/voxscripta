@@ -21,7 +21,8 @@ release. Because YouTube changes independently, users should update an old
 installation before reporting extraction failures. The live integration
 contract was validated with `yt-dlp 2026.07.04` on 2026-08-12. This is a
 known-good version, not yet a claimed minimum version. After upstream updates,
-run `VOXSCRIPTA_YTDLP_INTEGRATION=1 go test -run TestYTDLPIntegration -v .`.
+run `make integration`. This target sets `VOXSCRIPTA_YTDLP_INTEGRATION=1` and
+runs only the live integration suite; it requires network access.
 
 `ffmpeg` is not required for caption-only operation.
 

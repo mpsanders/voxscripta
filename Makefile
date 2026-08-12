@@ -12,13 +12,14 @@ endif
 
 .DEFAULT_GOAL := help
 
-.PHONY: help build run test race vet fmt fmt-check tidy tidy-check check clean
+.PHONY: help build run test integration race vet fmt fmt-check tidy tidy-check check clean
 
 help: ## Show the available targets.
 	@echo "VoxScripta development targets:"
 	@echo "  make build       Build the ytextract CLI"
 	@echo "  make run         Run the CLI (pass options with ARGS='...')"
 	@echo "  make test        Run all unit tests"
+	@echo "  make integration Run opt-in live yt-dlp integration tests"
 	@echo "  make race        Run all unit tests with the race detector"
 	@echo "  make vet         Run go vet"
 	@echo "  make fmt         Format all Go source files"
@@ -36,6 +37,13 @@ run: ## Run the ytextract CLI; for example, make run ARGS="--version".
 
 test: ## Run all unit tests.
 	$(GO) test ./...
+
+integration: ## Run live yt-dlp integration tests; requires yt-dlp and network access.
+ifeq ($(OS),Windows_NT)
+	set VOXSCRIPTA_YTDLP_INTEGRATION=1&& $(GO) test -run TestYTDLPIntegration -v .
+else
+	VOXSCRIPTA_YTDLP_INTEGRATION=1 $(GO) test -run TestYTDLPIntegration -v .
+endif
 
 race: ## Run all unit tests with the race detector.
 	$(GO) test -race ./...

@@ -25,7 +25,7 @@ The replaced candidates `ptfLfrW1648` and `BaW_jenozKc` were unavailable.
 yt-dlp --version
 yt-dlp --dump-single-json --skip-download --no-warnings -- VIDEO_ID
 yt-dlp --skip-download --list-subs -- VIDEO_ID
-VOXSCRIPTA_YTDLP_INTEGRATION=1 go test -run TestYTDLPIntegration -v .
+make integration
 ```
 
 Record the date, version, identity, duration, and expected track tags. Remove
