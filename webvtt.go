@@ -43,7 +43,8 @@ func ParseWebVTT(r io.Reader) ([]Segment, error) {
 		return nil, fmt.Errorf("%w: missing WEBVTT header", ErrUnsupportedFormat)
 	}
 
-	segments, err := parseWebVTTBlocks(lines[1:])
+	bodyStart := webVTTBodyStart(lines)
+	segments, err := parseWebVTTBlocks(lines[bodyStart:])
 	if err != nil {
 		return nil, err
 	}
@@ -52,6 +53,18 @@ func ParseWebVTT(r io.Reader) ([]Segment, error) {
 	}
 	sort.SliceStable(segments, func(i, j int) bool { return segments[i].Start < segments[j].Start })
 	return normalizeRollingSegments(segments), nil
+}
+
+// webVTTBodyStart returns the first line after the header metadata block. The
+// WebVTT signature may be followed by metadata such as Kind and Language until
+// the first blank line; those fields describe the file rather than a cue.
+func webVTTBodyStart(lines []string) int {
+	for index := 1; index < len(lines); index++ {
+		if strings.TrimSpace(lines[index]) == "" {
+			return index + 1
+		}
+	}
+	return len(lines)
 }
 
 // validWebVTTHeader reports whether line is a valid WebVTT file signature.
@@ -75,6 +88,20 @@ func parseWebVTTBlocks(lines []string) ([]Segment, error) {
 			i++
 		}
 		block := lines[start:i]
+		if blockEndsWithTiming(block) {
+			textStart := i
+			for textStart < len(lines) && strings.TrimSpace(lines[textStart]) == "" {
+				textStart++
+			}
+			textEnd := textStart
+			for textEnd < len(lines) && strings.TrimSpace(lines[textEnd]) != "" {
+				textEnd++
+			}
+			if textStart < textEnd && !strings.Contains(lines[textStart], "-->") {
+				block = append(block, lines[textStart:textEnd]...)
+				i = textEnd
+			}
+		}
 		if isWebVTTMetadataBlock(block[0]) {
 			continue
 		}
@@ -87,6 +114,13 @@ func parseWebVTTBlocks(lines []string) ([]Segment, error) {
 		}
 	}
 	return segments, nil
+}
+
+// blockEndsWithTiming reports whether a cue block currently contains its
+// timing line but no text. YouTube automatic captions sometimes insert a
+// whitespace-only line between those parts of an otherwise ordinary cue.
+func blockEndsWithTiming(block []string) bool {
+	return len(block) > 0 && strings.Contains(block[len(block)-1], "-->")
 }
 
 // isWebVTTMetadataBlock reports whether a block is NOTE, STYLE, or REGION data.

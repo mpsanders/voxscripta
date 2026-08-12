@@ -18,9 +18,10 @@ yt-dlp --version
 
 The project supports the current `yt-dlp` nightly channel and current stable
 release. Because YouTube changes independently, users should update an old
-installation before reporting extraction failures. Compatibility will be
-tested against a recorded version during provider integration; no minimum
-version is claimed until that contract has been observed and tested.
+installation before reporting extraction failures. The live integration
+contract was validated with `yt-dlp 2026.07.04` on 2026-08-12. This is a
+known-good version, not yet a claimed minimum version. After upstream updates,
+run `VOXSCRIPTA_YTDLP_INTEGRATION=1 go test -run TestYTDLPIntegration -v .`.
 
 `ffmpeg` is not required for caption-only operation.
 

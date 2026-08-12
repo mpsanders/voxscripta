@@ -164,6 +164,7 @@ Network-dependent `yt-dlp` tests will be opt-in so the normal unit-test suite re
 - [Roadmap](docs/planning/ROADMAP.md) defines implementation milestones and exit criteria.
 - [TODO](docs/planning/TODO.md) is the actionable backlog.
 - [Ideas](docs/planning/IDEAS.md) holds possible future work that is not yet committed.
+- [Live test-video matrix](docs/planning/TEST_VIDEOS.md) records proposed integration fixtures, provenance, validation, and replacement policy.
 - [Design conversation](docs/planning/YouTube%20Transcript%20Extraction%20Methods.md) records the initial exploration of extraction approaches.
 
 ## Contributing

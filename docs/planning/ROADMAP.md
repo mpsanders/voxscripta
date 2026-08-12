@@ -6,7 +6,7 @@ This roadmap is ordered by dependency and learning value. Dates are deliberately
 
 Status: in progress. Module identity, supported Go/platform policy, baseline
 layout, CI, license, dependency guidance, and initial diagrams are complete.
-Observed `yt-dlp` contracts and legal test fixtures remain outstanding.
+The public test-video matrix and sanitized observed fixtures are now recorded.
 
 Define the module and establish the contracts before committing to implementation details.
 
@@ -56,8 +56,9 @@ deterministic language/source selection, and isolated single-track WebVTT
 retrieval with guaranteed temporary-file cleanup are implemented and tested
 offline. Public provider orchestration now connects these pieces through
 parsing and normalized results. Subprocess failures retain bounded, redacted
-stderr without exposing command arguments. Live contract validation remains
-outstanding.
+stderr without exposing command arguments. The live matrix now validates
+manual, automatic, multilingual, unavailable, and cancellation behavior with
+`yt-dlp 2026.07.04`.
 
 Connect the normalized core to the primary acquisition mechanism.
 

@@ -12,8 +12,8 @@ This is the actionable project backlog. Check an item only when its implementati
 - [x] Add CI for build, test, `go vet`, formatting checks, and the supported OS matrix.
 - [x] Add a Makefile for the common build, run, test, vet, formatting, and module checks.
 - [x] Document how contributors install and verify `yt-dlp` without having the library install it.
-- [ ] Select stable public test videos representing manual captions, automatic captions, multiple languages, and no captions; record why each is safe to use.
-- [ ] Capture representative, sanitized `yt-dlp` JSON and subtitle fixtures for offline tests.
+- [x] Validate and accept the public test-video matrix in `TEST_VIDEOS.md` with `yt-dlp 2026.07.04`.
+- [x] Capture representative, sanitized `yt-dlp` JSON fixtures and WebVTT structures for offline tests.
 - [x] Resolve the repository convention mismatch between the current `planning/` directory and the `docs/planning` path described in `agents.md`.
 
 ## Core model and parsing
@@ -42,7 +42,7 @@ This is the actionable project backlog. Check an item only when its implementati
 - [x] Isolate temporary files, constrain generated paths, and guarantee cleanup.
 - [x] Redact signed URLs, cookies, and command secrets from bounded subprocess diagnostics; command arguments are never retained in errors.
 - [ ] Cover process failure, malformed JSON, missing output, non-zero exit, timeout, and cancellation.
-- [ ] Add opt-in integration tests that skip clearly when `yt-dlp` or network access is unavailable.
+- [x] Add opt-in integration tests for manual, automatic, multilingual, unavailable, and cancellation cases.
 
 ## Public API
 
