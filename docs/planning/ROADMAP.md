@@ -4,7 +4,7 @@ This roadmap is ordered by dependency and learning value. Dates are deliberately
 
 ## Milestone 0: Foundation and decisions
 
-Status: in progress. Module identity, supported Go/platform policy, baseline
+Status: complete. Module identity, supported Go/platform policy, baseline
 layout, CI, license, dependency guidance, and initial diagrams are complete.
 The public test-video matrix and sanitized observed fixtures are now recorded.
 
@@ -109,12 +109,12 @@ Exit criteria:
 
 ## Milestone 4: Hardening and first release
 
-Status: in progress. Cross-platform CI, formatting, vet, and deterministic test
-gates are established. Responsible-use and upstream-breakage guidance, a
-changelog, and a release checklist are documented. Race coverage now runs in
-CI. The initial release target is v0.1.0, with a documented human-readable CLI
-JSON contract. Vulnerability/static-analysis policy and final release
-verification remain.
+Status: release candidate. Cross-platform CI, formatting, vet, deterministic
+tests, race coverage, pinned Staticcheck, and pinned govulncheck gates are
+established. Responsible-use and upstream-breakage guidance, a changelog, and
+a release checklist are documented. Local release-hardening checks passed on
+2026-08-12. Publishing v0.1.0 remains a maintainer action after the updated CI
+workflow and final live integration matrix pass on the release commit.
 
 Prepare the caption-only implementation for dependable reuse.
 

@@ -76,6 +76,10 @@ This is the actionable project backlog. Check an item only when its implementati
 - [x] Add changelog/release notes and a release checklist.
 - [x] Run `gofmt`, unit tests, integration tests, `go vet ./...`, and the race detector where supported (verified 2026-08-12).
 - [x] Choose v0.1.0 as the initial release version and human-readable duration strings for CLI JSON.
+- [x] Add pinned Staticcheck 2026.1 and govulncheck v1.6.0 CI and Makefile gates.
+- [x] Run the local release-hardening suite; no reachable vulnerabilities were reported on 2026-08-12.
+- [ ] Confirm the updated CI workflow and live integration matrix pass on the exact release commit.
+- [ ] Tag and publish v0.1.0, then perform the clean-install checks in `docs/RELEASING.md`.
 
 ## Later: optional speech-to-text
 

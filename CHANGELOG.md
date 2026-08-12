@@ -17,6 +17,8 @@ Planned version: v0.1.0.
   offline dependency check.
 - Human-readable duration strings in CLI JSON output.
 - Offline unit and process-level smoke tests plus opt-in live integration tests.
+- Pinned Staticcheck and govulncheck release-hardening gates in CI and the
+  Makefile.
 
 ### Changed
 

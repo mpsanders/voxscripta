@@ -18,7 +18,7 @@ VoxScripta is a library-first Go toolkit for acquiring normalized, timestamped t
 
 Applications that summarize, search, cite, or otherwise process video speech need more than a plain text blob. They need timestamps, language and source information, predictable selection rules, cancellation, and errors they can act on.
 
-YouTube's unofficial extraction surfaces change frequently. Instead of embedding a fragile reimplementation, this project will initially use [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) for caption discovery and retrieval, then normalize the result behind an idiomatic Go API. An optional speech-to-text provider can later cover videos that have no captions.
+YouTube's unofficial extraction surfaces change frequently. Instead of embedding a fragile reimplementation, this project uses [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) for caption discovery and retrieval, then normalizes the result behind an idiomatic Go API. An optional speech-to-text provider can later cover videos that have no captions.
 
 ## Intended capabilities
 
@@ -27,7 +27,7 @@ YouTube's unofficial extraction surfaces change frequently. Instead of embedding
 - Select tracks deterministically using caller-supplied language preferences.
 - Preserve ordered start/end timestamps and caption-source metadata.
 - Return one provider-independent transcript model.
-- Render plain text initially, with JSON, WebVTT, SRT, and Markdown planned.
+- Render plain text through the library and structured JSON through the CLI; WebVTT, SRT, and Markdown renderers are possible later additions.
 - Respect context cancellation and deadlines.
 - Expose useful errors for missing dependencies, invalid input, and unavailable transcripts.
 - Permit custom acquisition providers without forcing them on ordinary users.
@@ -132,13 +132,13 @@ its version. It performs no video or network acquisition.
 
 ## Runtime dependencies
 
-The first caption provider will require a compatible `yt-dlp` executable available on `PATH` or supplied explicitly in configuration.
+The caption provider requires a compatible `yt-dlp` executable available on `PATH` or supplied explicitly in configuration.
 
 The library will not silently install external tools. A future speech-to-text fallback may also require `ffmpeg`, a local model/runtime, or credentials for a remote service, but those dependencies will remain optional and explicit.
 
 ## Expected caption preference
 
-The exact configurable policy will be validated during implementation. The working preference is:
+The implemented caption preference is:
 
 1. manual captions matching the requested language;
 2. manual captions matching an allowed language fallback;
@@ -167,13 +167,18 @@ make build
 make test
 make integration
 make vet
+make staticcheck
+make vuln
+make hardening
 make run ARGS="--version"
 make check
 ```
 
 Run `make help` for the complete target list, including formatting, race testing,
-module tidying, and cleanup. `make check` performs the same core checks expected
-before submitting a change.
+module tidying, and cleanup. `make check` performs the deterministic core checks
+expected before submitting a change. `make hardening` additionally runs the race
+detector, Staticcheck, and the network-backed Go vulnerability scan; install the
+pinned tool versions documented in [CONTRIBUTING.md](CONTRIBUTING.md) first.
 
 Network-dependent `yt-dlp` tests are opt-in so the normal unit-test suite remains deterministic. The ordinary suite includes process-level CLI smoke tests backed by a temporary fake provider executable. Run the live tests explicitly with `make integration`; this requires `yt-dlp` on `PATH` and public network access. `make test` continues to skip the live suite.
 

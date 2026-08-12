@@ -12,12 +12,14 @@
 
 ## Verification
 
-- Run `make check` on a clean worktree.
-- Run `make race` on a platform supported by Go's race detector.
+- Install the pinned Staticcheck and govulncheck versions documented in
+  `CONTRIBUTING.md`, then run `make hardening` on a clean worktree.
 - Run `make integration` with the documented known-good yt-dlp version.
 - Confirm CI passes on the supported Go versions across Windows, Linux, and
   macOS.
-- Review dependency and vulnerability reports; document or remediate findings.
+- Review Staticcheck and govulncheck output; document or remediate findings.
+  A govulncheck result is dated evidence based on reachable call paths and the
+  vulnerability database at scan time, not a permanent guarantee.
 - Build the CLI and run `ytextract --check` against the release environment.
 
 ## Publication
