@@ -102,6 +102,9 @@ func TestClientRetrieve(t *testing.T) {
 			if tt.wantFlag != "" && !containsArgument(runner.args, tt.wantFlag) {
 				t.Errorf("runner args = %q, want %s", runner.args, tt.wantFlag)
 			}
+			if len(runner.args) > 0 && !containsArgument(runner.args, "--ignore-config") {
+				t.Errorf("runner args = %q, want --ignore-config", runner.args)
+			}
 		})
 	}
 }

@@ -2,7 +2,9 @@
 
 ## North star
 
-Build a dependable, library-first Go toolkit that applications can import to obtain a normalized, timestamped transcript for a public YouTube video.
+Build a dependable, library-first Go toolkit that applications can import to
+obtain a normalized, timestamped transcript from any accessible YouTube video
+with usable captions or speech, on a best-effort basis.
 
 The project should make the common case simple while keeping YouTube-specific volatility and external tooling behind clear boundaries. A small command-line program will exercise the public API during development and provide a useful diagnostic tool, but it is not the primary product.
 
@@ -18,7 +20,7 @@ An importing application can:
 - replace or add acquisition providers without changing downstream code; and
 - render the normalized result as plain text or common subtitle formats.
 
-The default implementation should use `yt-dlp` to discover and retrieve existing captions. This delegates the frequently changing YouTube integration to a mature, actively maintained tool. Videos without captions can later be handled by explicitly configured fallback: `yt-dlp` acquires bounded audio, FFmpeg converts it only when required by the selected backend, and a replaceable local or hosted transcriber produces normalized segments.
+The default implementation should use `yt-dlp` to discover and retrieve existing captions. This delegates the frequently changing YouTube integration to a mature, actively maintained tool. Videos without usable captions can be handled by explicitly configured fallback: `yt-dlp` acquires checked audio, FFmpeg converts it only when required by the selected backend, and a replaceable local or hosted transcriber produces normalized segments. The library exposes caller-selected ordering and limits; the CLI should try every locally available and explicitly configured strategy without silently spending money or disclosing audio through ambient credentials.
 
 ## Product principles
 
@@ -47,7 +49,7 @@ The default implementation should use `yt-dlp` to discover and retrieve existing
 
 ### Later scope
 
-- Optional speech-to-text providers for videos without captions.
+- Optional speech-to-text providers for videos without usable captions.
 - Audio acquisition through `yt-dlp` and conversion through `ffmpeg` where required.
 - Local and hosted transcription adapters kept separate from YouTube-specific
   acquisition so callers can choose privacy, portability, latency, and cost
@@ -60,9 +62,12 @@ The default implementation should use `yt-dlp` to discover and retrieve existing
 
 - Reimplementing YouTube's private player, Innertube, signature, or caption APIs.
 - Circumventing authentication, access controls, DRM, geographic restrictions, or anti-bot protections.
-- Guaranteeing a transcript for every video.
+- Guaranteeing a transcript for private, DRM-protected, inaccessible, silent,
+  corrupted, or otherwise unsupported media.
 - Bundling or auto-installing `yt-dlp`, `ffmpeg`, or speech-to-text models in the core library.
-- Providing a hosted transcription service, downloader, media player, or general-purpose `yt-dlp` wrapper.
+- Providing a hosted transcription service, media player, or general-purpose
+  downloader/`yt-dlp` wrapper; narrow temporary audio acquisition exists only
+  to support transcription.
 - Making the official YouTube Data API the default path for arbitrary public videos; caption downloads there are suited to content the authenticated user can manage.
 
 ## Proposed public API direction

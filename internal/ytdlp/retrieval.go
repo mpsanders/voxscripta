@@ -34,7 +34,7 @@ func (c *Client) Retrieve(ctx context.Context, videoID string, track CaptionTrac
 	defer os.RemoveAll(temporaryDirectory)
 
 	outputTemplate := filepath.Join(temporaryDirectory, "caption.%(ext)s")
-	arguments := []string{
+	arguments := []string{ignoreConfigArgument,
 		"--skip-download", "--no-warnings", "--sub-langs", track.Language,
 		"--sub-format", "vtt", "--output", outputTemplate,
 	}

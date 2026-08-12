@@ -19,6 +19,15 @@ credential-shaped values redacted. Redaction is defense in depth, not a
 guarantee. Treat diagnostics as potentially sensitive and avoid publishing
 them or storing them indefinitely.
 
+Speech-to-text acquisition temporarily stores the video's full selected audio
+stream, which can be more sensitive and rights-restricted than captions alone.
+Direct audio-source callers must close the returned stream promptly so its
+isolated temporary directory can be removed, and must handle cleanup errors.
+Before configuring a future hosted transcriber, treat the upload as disclosure
+of the source audio to another service and review its retention and training
+policies, data location, credentials, cost, and the permissions applicable to
+the recording.
+
 ## Platform access and restrictions
 
 The project does not bypass authentication, DRM, geographic restrictions, or

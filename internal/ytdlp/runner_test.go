@@ -71,3 +71,35 @@ func TestCommandError(t *testing.T) {
 		})
 	}
 }
+
+// TestBoundedBuffer verifies that process output capture retains only a fixed
+// prefix while always reporting complete writes to the subprocess.
+func TestBoundedBuffer(t *testing.T) {
+	tests := []struct {
+		name   string
+		limit  int
+		writes []string
+		want   string
+	}{
+		{name: "zero limit", writes: []string{"discard"}},
+		{name: "empty write", limit: 4, writes: []string{""}},
+		{name: "under limit", limit: 4, writes: []string{"abc"}, want: "abc"},
+		{name: "exact limit", limit: 4, writes: []string{"abcd"}, want: "abcd"},
+		{name: "single write truncated", limit: 4, writes: []string{"abcdef"}, want: "abcd"},
+		{name: "multiple writes truncated", limit: 5, writes: []string{"ab", "cdef", "gh"}, want: "abcde"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			buffer := newBoundedBuffer(test.limit)
+			for _, value := range test.writes {
+				written, err := buffer.Write([]byte(value))
+				if err != nil || written != len(value) {
+					t.Fatalf("Write(%q) = %d, %v", value, written, err)
+				}
+			}
+			if buffer.String() != test.want || string(buffer.Bytes()) != test.want {
+				t.Fatalf("buffer = %q, want %q", buffer.String(), test.want)
+			}
+		})
+	}
+}

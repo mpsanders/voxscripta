@@ -63,8 +63,9 @@ func TestClientVersion(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("Version() = %q, want %q", got, tt.want)
 			}
-			if tt.name != "nil client" && !reflect.DeepEqual(runner.args, []string{"--version"}) {
-				t.Errorf("runner args = %q, want [--version]", runner.args)
+			wantArgs := []string{"--ignore-config", "--version"}
+			if tt.name != "nil client" && !reflect.DeepEqual(runner.args, wantArgs) {
+				t.Errorf("runner args = %q, want %q", runner.args, wantArgs)
 			}
 		})
 	}

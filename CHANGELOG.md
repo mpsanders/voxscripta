@@ -4,6 +4,22 @@ All notable changes will be documented here. The project follows Semantic
 Versioning once a release is published; compatibility is not promised before
 v1.0.0.
 
+## [Unreleased]
+
+### Added
+
+- Separate audio-source and transcriber contracts, plus adapter-neutral
+  speech-to-text composition with optional duration/file-size guards and
+  surfaced audio-cleanup failures.
+- A `yt-dlp` audio source with duration preflight, isolated temporary storage,
+  best-effort transfer-size rejection, strict final-file verification, and
+  cancellation cleanup.
+
+### Security
+
+- Library-controlled `yt-dlp` calls ignore ambient configuration files and
+  subprocess output capture is bounded.
+
 ## [0.1.0] - 2026-08-12
 
 ### Added
@@ -19,9 +35,6 @@ v1.0.0.
   Makefile.
 - Explicit provider fallback composition that runs only when the primary
   provider reports an unavailable transcript.
-- Separate audio-source and transcriber contracts, plus adapter-neutral
-  speech-to-text composition with duration/file-size guards and guaranteed
-  audio closure.
 
 ### Changed
 

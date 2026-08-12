@@ -4,11 +4,12 @@ skinparam packageStyle rectangle
 package "transcript (public)" {
   class Transcript
   class Segment
-  class Client
+  class "Client" as PublicClient
   interface Provider
   class FallbackProvider
   class SpeechToTextProvider
   interface AudioSource
+  class YTDLPAudioSource
   interface Transcriber
   class Audio
   class Options
@@ -16,14 +17,14 @@ package "transcript (public)" {
 }
 
 package "internal/ytdlp" {
-  class Client
+  class "Client" as YTDLPClient
   interface CommandRunner
   class Metadata
   class CaptionTrack
+  class AudioArtifact
 }
 
 package "planned Milestone 5 adapters" #EEEEEE {
-  class YTDLPAudioSource <<planned>>
   interface AudioProcessor <<decision pending>>
   class FFmpegProcessor <<conditional, planned>>
   class WhisperCPPTranscriber <<prototype planned>>
@@ -34,20 +35,21 @@ package "cmd/ytextract" {
   class CLI
 }
 
-CLI --> Provider : calls public API
-Client --> Provider : orchestrates
+CLI --> PublicClient : calls public API
+PublicClient --> Provider : orchestrates
 FallbackProvider --> Provider : primary then explicit fallback
 FallbackProvider --> SpeechToTextProvider : optional fallback
-SpeechToTextProvider --> AudioSource : acquires bounded audio
+SpeechToTextProvider --> AudioSource : acquires checked audio
 SpeechToTextProvider --> Transcriber : produces segments
 AudioSource --> Audio
 YTDLPAudioSource ..|> AudioSource
-YTDLPAudioSource ..> AudioProcessor : only if boundary adopted
+YTDLPAudioSource --> YTDLPClient : checked audio download
+YTDLPClient --> AudioArtifact : returns owned artifact
 AudioProcessor <|.. FFmpegProcessor
 WhisperCPPTranscriber ..|> Transcriber
 HostedTranscriber ..|> Transcriber
-Client --> CommandRunner
-Client --> Metadata : inspects
+YTDLPClient --> CommandRunner
+YTDLPClient --> Metadata : inspects
 Metadata *-- CaptionTrack
 Transcript *-- Segment
 WebVTTParser --> Segment : normalizes

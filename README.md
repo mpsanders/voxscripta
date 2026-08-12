@@ -8,17 +8,16 @@
 
 VoxScripta is a library-first Go toolkit for acquiring normalized, timestamped transcripts from public YouTube videos. A small CLI is included as a development, testing, and diagnostic harness over the same public API.
 
-> **Status:** caption-only development release. Caption discovery, selection,
-> retrieval, WebVTT normalization, the public acquisition client, live
-> integration coverage, and an offline-smoke-tested development CLI are
-> implemented. Release hardening remains before v1. Public APIs may change
-> before v1.
+> **Status:** caption-first development release. Caption discovery, selection,
+> retrieval, WebVTT normalization, and a checked audio source are implemented.
+> No concrete speech transcriber is included, so the CLI remains caption-only.
+> Public APIs may change before v1.
 
 ## Why this project exists
 
 Applications that summarize, search, cite, or otherwise process video speech need more than a plain text blob. They need timestamps, language and source information, predictable selection rules, cancellation, and errors they can act on.
 
-YouTube's unofficial extraction surfaces change frequently. Instead of embedding a fragile reimplementation, this project uses [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) for caption discovery and retrieval, then normalizes the result behind an idiomatic Go API. An optional speech-to-text provider can later cover videos that have no captions.
+YouTube's unofficial extraction surfaces change frequently. Instead of embedding a fragile reimplementation, this project uses [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) for caption discovery and retrieval, then normalizes the result behind an idiomatic Go API. An explicitly configured speech-to-text provider can cover videos that have no usable captions once a concrete transcriber is added.
 
 ## Intended capabilities
 
@@ -36,11 +35,12 @@ Optional provider fallback is explicit. `transcript.FallbackProvider` invokes
 its fallback only when the primary provider reports
 `ErrTranscriptUnavailable`; it does not turn cancellation, invalid input,
 missing dependencies, or provider failures into additional work. A future
-speech-to-text adapter can use this composition without becoming a core
-runtime dependency. The public `AudioSource` and `Transcriber` contracts are
+transcriber adapter can use this composition without becoming a core runtime
+dependency. The public `AudioSource` and `Transcriber` contracts are
 separate, and `SpeechToTextProvider` composes them while enforcing optional
 duration/file-size limits and closing acquired audio on every post-acquisition
-path. No concrete adapter is included yet.
+path. Cleanup failures are returned. `YTDLPAudioSource` is the concrete audio
+acquisition adapter; no concrete transcriber is included yet.
 
 ## Architecture
 
@@ -61,8 +61,8 @@ Importing Go application                Development CLI
                               |
              timestamped Transcript result
 
-Later, when explicitly configured:
-no captions -> AudioSource -> bounded Audio -> Transcriber -> normalize
+When explicitly configured by a library consumer:
+no captions -> YTDLPAudioSource -> checked Audio -> Transcriber -> normalize
 ```
 
 The CLI will remain a thin API consumer. Extraction logic will not live in `cmd/`.
@@ -144,22 +144,54 @@ its version. It performs no video or network acquisition.
 
 The caption provider requires a compatible `yt-dlp` executable available on `PATH` or supplied explicitly in configuration.
 
-The library will not silently install external tools. A future speech-to-text fallback may also require `ffmpeg`, a local model/runtime, or credentials for a remote service, but those dependencies will remain optional and explicit.
+The library will not silently install external tools. Speech-to-text audio
+acquisition uses the same caller-installed `yt-dlp`. A future concrete
+transcriber may also require `ffmpeg`, a local model/runtime, or credentials
+for a remote service, but those dependencies will remain optional and explicit.
 
-The speech-to-text composition API is currently adapter-neutral. Duration and
-file-size limits can be configured on `SpeechToTextProvider`; cost and
-concurrency controls will be designed with the first concrete adapter rather
+The speech-to-text composition API is transcriber-neutral. Construct a
+`YTDLPAudioSource` with `NewYTDLPAudioSource`, then configure it on
+`SpeechToTextProvider`. A zero limit disables that limit; negative limits are
+invalid. With a positive duration limit, unknown-duration and live inputs are
+rejected before download. `MaxBytes` asks `yt-dlp` to reject known oversized
+downloads and strictly rejects an oversized completed artifact, but upstream
+manifest/fragment downloads are not hard-bounded while in flight. `Audio.Format`
+is a lower-case container/file-extension hint, not a codec guarantee. Direct
+`YTDLPAudioSource.Acquire` callers must close `Audio.Data` promptly to remove
+the temporary artifact. `SpeechToTextProvider` closes it automatically. Cost
+and concurrency controls will be designed with the first concrete adapter rather
 than represented by misleading generic fields.
+
+The current public composition is explicit: create the ordinary caption client,
+use it as `FallbackProvider.Primary`, use a configured `SpeechToTextProvider`
+as `Fallback`, and install that chain in an outer client. The fallback runs only
+for `ErrTranscriptUnavailable`. A compile-tested offline example is included;
+the CLI does not enable this chain until a concrete transcriber is selected.
+
+```go
+captions, err := transcript.New(transcript.WithYTDLPPath("yt-dlp"))
+if err != nil {
+	return err
+}
+speech := transcript.SpeechToTextProvider{
+	AudioSource: transcript.NewYTDLPAudioSource("yt-dlp"),
+	Transcriber: myTranscriber,
+	MaxDuration: 2 * time.Hour,
+	MaxBytes:    200 << 20,
+}
+client, err := transcript.New(transcript.WithProvider(transcript.FallbackProvider{
+	Primary: captions,
+	Fallback: speech,
+}))
+```
 
 ## Expected caption preference
 
-The implemented caption preference is:
-
-1. manual captions matching the requested language;
-2. manual captions matching an allowed language fallback;
-3. automatic captions matching the requested language;
-4. automatic captions matching an allowed language fallback;
-5. speech-to-text only when explicitly configured and appropriate.
+For each requested language in caller order, selection tries an exact tag,
+then its base tag, then another regional variant. Manual captions beat automatic
+captions only within the same preference and match rank. Automatic captions
+require explicit library permission and are enabled by default in the CLI.
+Speech-to-text runs only through an explicitly configured fallback provider.
 
 The result will report what was actually selected.
 
@@ -173,7 +205,7 @@ The result will report what was actually selected.
 
 ## Development
 
-Development requires Go 1.25 or 1.26. The normalized core has no external runtime dependency. Caption acquisition will require a caller-installed `yt-dlp`; see [runtime dependencies](docs/DEPENDENCIES.md).
+Development requires Go 1.25 or 1.26. The normalized core has no external runtime dependency. Caption and audio acquisition require a caller-installed `yt-dlp`; see [runtime dependencies](docs/DEPENDENCIES.md).
 
 The repository Makefile provides the common development commands:
 

@@ -45,9 +45,9 @@ test: ## Run all unit tests.
 
 integration: ## Run live yt-dlp integration tests; requires yt-dlp and network access.
 ifeq ($(OS),Windows_NT)
-	set VOXSCRIPTA_YTDLP_INTEGRATION=1&& $(GO) test -run TestYTDLPIntegration -v .
+	set VOXSCRIPTA_YTDLP_INTEGRATION=1&& $(GO) test -run TestYTDLP.*Integration -v .
 else
-	VOXSCRIPTA_YTDLP_INTEGRATION=1 $(GO) test -run TestYTDLPIntegration -v .
+	VOXSCRIPTA_YTDLP_INTEGRATION=1 $(GO) test -run 'TestYTDLP.*Integration' -v .
 endif
 
 race: ## Run all unit tests with the race detector.

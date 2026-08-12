@@ -9,11 +9,16 @@ fallback provider only when the primary provider returns
 `ErrTranscriptUnavailable`. It passes through cancellation, invalid input,
 missing dependencies, and provider failures without starting more work.
 
-The fallback provider remains a normal `Provider`. A future speech-to-text
-adapter can therefore be composed without adding speech-to-text dependencies
-to the caption path or changing `Client`. Audio acquisition and transcription
-contracts are deliberately deferred until an adapter is selected and their
-resource ownership, limits, and partial-result semantics can be tested.
+The fallback provider remains a normal `Provider`. A speech-to-text provider
+can therefore be composed without adding speech-to-text dependencies to the
+caption path or changing `Client`.
+
+Amendment, 2026-08-13: separate `AudioSource` and `Transcriber` contracts are
+now exported and composed by `SpeechToTextProvider`. It owns and closes acquired
+audio after transcription, returns cleanup failures, and discards invalid or
+partial transcriber output. Concrete transcriber-specific partial-result,
+cost, concurrency, and conversion policies remain deferred until prototype
+evidence exists.
 
 ## Consequences
 

@@ -3,6 +3,7 @@ package transcript_test
 import (
 	"context"
 	"errors"
+	"io"
 	"os"
 	"testing"
 	"time"
@@ -52,6 +53,58 @@ func TestYTDLPIntegration(t *testing.T) {
 				if result.Source != test.wantSource || result.Language.Code != test.wantLang || len(result.Segments) == 0 {
 					t.Fatalf("Get() result source/language/segments = %q/%q/%d", result.Source, result.Language.Code, len(result.Segments))
 				}
+			}
+		})
+	}
+}
+
+// TestYTDLPAudioSourceIntegration exercises live audio acquisition and its
+// duration, file-size, validation, cancellation, and ownership safeguards.
+func TestYTDLPAudioSourceIntegration(t *testing.T) {
+	if os.Getenv("VOXSCRIPTA_YTDLP_INTEGRATION") != "1" {
+		t.Skip("set VOXSCRIPTA_YTDLP_INTEGRATION=1 to run live yt-dlp tests")
+	}
+	canceled, cancel := context.WithCancel(context.Background())
+	cancel()
+	tests := []struct {
+		name      string
+		source    *transcript.YTDLPAudioSource
+		videoID   string
+		options   transcript.AudioOptions
+		wantErr   error
+		cancel    bool
+		wantAudio bool
+	}{
+		{name: "downloads short audio", source: transcript.NewYTDLPAudioSource(""), videoID: "O8G5Mkzhe4s", options: transcript.AudioOptions{MaxDuration: 2 * time.Minute, MaxBytes: 10 << 20}, wantAudio: true},
+		{name: "rejects duration before download", source: transcript.NewYTDLPAudioSource(""), videoID: "O8G5Mkzhe4s", options: transcript.AudioOptions{MaxDuration: time.Second}, wantErr: transcript.ErrLimitExceeded},
+		{name: "rejects known oversized download", source: transcript.NewYTDLPAudioSource(""), videoID: "O8G5Mkzhe4s", options: transcript.AudioOptions{MaxBytes: 1}, wantErr: transcript.ErrLimitExceeded},
+		{name: "honors canceled context", source: transcript.NewYTDLPAudioSource(""), videoID: "O8G5Mkzhe4s", cancel: true, wantErr: context.Canceled},
+		{name: "rejects negative limit", source: transcript.NewYTDLPAudioSource(""), videoID: "O8G5Mkzhe4s", options: transcript.AudioOptions{MaxBytes: -1}, wantErr: transcript.ErrInvalidInput},
+		{name: "rejects nil source", videoID: "O8G5Mkzhe4s", wantErr: transcript.ErrInvalidInput},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ctx, timeoutCancel := context.WithTimeout(context.Background(), 90*time.Second)
+			defer timeoutCancel()
+			if test.cancel {
+				ctx = canceled
+			}
+			audio, err := test.source.Acquire(ctx, test.videoID, test.options)
+			if !errors.Is(err, test.wantErr) {
+				t.Fatalf("Acquire() error = %v, want errors.Is(_, %v)", err, test.wantErr)
+			}
+			if err != nil {
+				return
+			}
+			if test.wantAudio && (audio.Format == "" || audio.Size <= 0 || audio.Size > test.options.MaxBytes || audio.Duration <= 0 || audio.Duration > test.options.MaxDuration) {
+				t.Fatalf("Acquire() format/size/duration = %q/%d/%s", audio.Format, audio.Size, audio.Duration)
+			}
+			buffer := make([]byte, 1)
+			if _, readErr := io.ReadFull(audio.Data, buffer); readErr != nil {
+				t.Fatalf("read acquired audio: %v", readErr)
+			}
+			if closeErr := audio.Data.Close(); closeErr != nil {
+				t.Fatalf("close acquired audio: %v", closeErr)
 			}
 		})
 	}

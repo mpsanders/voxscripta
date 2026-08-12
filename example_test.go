@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"strings"
 	"time"
 
@@ -13,6 +14,10 @@ import (
 type exampleProvider struct{}
 
 type unavailableExampleProvider struct{}
+
+type exampleAudioSource struct{}
+
+type exampleTranscriber struct{}
 
 // Get reports that no transcript is available so the fallback example remains
 // deterministic and offline.
@@ -33,6 +38,21 @@ func (exampleProvider) Get(_ context.Context, videoID string, options transcript
 		Source:   transcript.SourceManual,
 		Provider: transcript.ProviderMetadata{Name: "example"},
 		Segments: []transcript.Segment{{Start: 0, End: time.Second, Text: "Hello, world."}},
+	}, nil
+}
+
+// Acquire returns deterministic in-memory audio for the fallback composition
+// example; real consumers can use transcript.NewYTDLPAudioSource instead.
+func (exampleAudioSource) Acquire(context.Context, string, transcript.AudioOptions) (transcript.Audio, error) {
+	return transcript.Audio{Data: io.NopCloser(strings.NewReader("audio")), Format: "wav", Duration: time.Second, Size: 5}, nil
+}
+
+// Transcribe returns a deterministic speech-to-text result for the fallback
+// composition example.
+func (exampleTranscriber) Transcribe(context.Context, transcript.Audio, []string) (transcript.Transcription, error) {
+	return transcript.Transcription{
+		Language: transcript.Language{Code: "en"}, Provider: transcript.ProviderMetadata{Name: "example-stt"},
+		Segments: []transcript.Segment{{Start: 0, End: time.Second, Text: "Spoken fallback."}},
 	}, nil
 }
 
@@ -88,6 +108,22 @@ func ExampleFallbackProvider() {
 	result, _ := client.Get(context.Background(), "dQw4w9WgXcQ", transcript.Options{})
 	fmt.Println(result.Text())
 	// Output: Hello, world.
+}
+
+// ExampleSpeechToTextProvider demonstrates the implemented caption-first
+// composition without requiring network access or a concrete transcriber.
+func ExampleSpeechToTextProvider() {
+	primary, _ := transcript.New(transcript.WithProvider(unavailableExampleProvider{}))
+	speech := transcript.SpeechToTextProvider{
+		AudioSource: exampleAudioSource{}, Transcriber: exampleTranscriber{},
+		MaxDuration: time.Minute, MaxBytes: 1024,
+	}
+	client, _ := transcript.New(transcript.WithProvider(transcript.FallbackProvider{
+		Primary: primary, Fallback: speech,
+	}))
+	result, _ := client.Get(context.Background(), "dQw4w9WgXcQ", transcript.Options{Languages: []string{"en"}})
+	fmt.Println(result.Source, result.Text())
+	// Output: speech_to_text Spoken fallback.
 }
 
 // ExampleParseWebVTT demonstrates parsing subtitle data independently of any

@@ -109,12 +109,14 @@ Exit criteria:
 
 ## Milestone 4: Hardening and first release
 
-Status: release candidate. Cross-platform CI, formatting, vet, deterministic
+Status: locally tagged but not published. Cross-platform CI, formatting, vet, deterministic
 tests, race coverage, pinned Staticcheck, and pinned govulncheck gates are
 established. Responsible-use and upstream-breakage guidance, a changelog, and
 a release checklist are documented. Local release-hardening checks passed on
-2026-08-12. Publishing v0.1.0 remains a maintainer action after the updated CI
-workflow and final live integration matrix pass on the release commit.
+2026-08-13. The annotated local `v0.1.0` tag points to the caption/fallback
+commit, but the configured GitLab remote had no tag on 2026-08-13. Publishing
+and clean-install validation remain maintainer actions. Current speech/audio
+work is post-tag and recorded under `Unreleased`.
 
 Prepare the caption-only implementation for dependable reuse.
 
@@ -137,9 +139,13 @@ Exit criteria:
 
 Status: in progress. The provider-level fallback policy is implemented and
 requires explicit composition. Separate audio-source and transcriber contracts
-now compose through `SpeechToTextProvider`, which guarantees audio closure and
-enforces configured duration and file-size limits before transcription.
-No concrete audio or transcription adapter has been selected; cost and
+now compose through `SpeechToTextProvider`, which checks configured duration
+and file-size limits, closes audio after transcription, and surfaces closure
+failures. The concrete `YTDLPAudioSource` now rejects unknown/live or known over-limit
+durations before downloading, asks `yt-dlp` to reject known oversized files,
+strictly verifies the resulting file, and owns isolated temporary artifacts
+until the audio stream is closed.
+No concrete transcription adapter has been selected; cost and
 concurrency limits, partial-result policy, and end-to-end adapter cleanup tests
 remain pending evaluation.
 
@@ -147,7 +153,7 @@ Extend coverage without making heavy dependencies part of the core caption path.
 
 Implementation sequence:
 
-1. **Bounded `yt-dlp` audio acquisition.** Implement an audio source that
+1. **Checked `yt-dlp` audio acquisition.** Implement an audio source that
    inspects duration before download, retrieves audio into isolated temporary
    storage, constrains output size, honors cancellation, and removes all
    temporary artifacts on success and failure.
@@ -168,6 +174,13 @@ Implementation sequence:
    `FallbackProvider`, decide the partial-result policy, and test no-caption
    fallback, failures, cancellation, resource limits, and cleanup across every
    stage.
+6. **Completeness and CLI policy.** Define measurable caption completeness and
+   whether incomplete tracks are accepted, replaced, compared, or merged with
+   speech-to-text. Expose deterministic caller-selected ordering in the library.
+   Make the CLI try every locally installed and explicitly enabled strategy,
+   preferring captions and local transcription before hosted services. A hosted
+   provider is available only through explicit CLI configuration; ambient
+   credentials alone must not trigger cost or audio disclosure.
 
 Completed foundations:
 
@@ -175,12 +188,17 @@ Completed foundations:
 - Define explicit fallback policy, language hints, and provider-level
   duration/file-size guards.
 - Normalize valid speech-to-text segments into the same `Transcript` model.
+- Acquire the best available audio-only media with duration preflight, best-effort
+  transfer-size rejection, strict final-size verification, offline fake-process
+  coverage, and an opt-in live suite validated with `yt-dlp 2026.07.04` on
+  2026-08-13.
 
 Exit criteria:
 
 - Caption retrieval remains the default and has no new mandatory runtime dependency.
 - Callers must explicitly configure or opt into potentially costly speech-to-text work.
-- `yt-dlp` audio acquisition is bounded and temporary artifacts are cleaned up.
+- `yt-dlp` audio acquisition rejects configured duration and final-size limits,
+  documents its in-flight size limitation, and surfaces cleanup failures.
 - FFmpeg is required only by configurations whose selected adapter needs it.
 - At least one transcriber adapter has documented compatibility and safeguards.
 - Tests cover fallback ordering, cancellation, limits, partial output, and cleanup.

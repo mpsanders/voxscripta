@@ -6,7 +6,7 @@ sanitized repository fixtures without network access.
 
 ## Validated matrix
 
-Validated on 2026-08-12 with `yt-dlp 2026.07.04`. All cases passed through the
+Validated again on 2026-08-13 with `yt-dlp 2026.07.04`. All cases passed through the
 public `Client.Get` API.
 
 | Case | Video | Observed contract | Status |
@@ -15,6 +15,14 @@ public `Client.Get` API.
 | Automatic captions | `4IVomi9s4BA`, Google for Developers' *Continuous learning with Google in Udacity with spanish subtitles [spanish]* (43 seconds) | Spanish automatic WebVTT returns `SourceAutomatic`. | Accepted; automatic state remains mutable. |
 | Multiple manual languages | `W01c2-2NubU`, Wikimedia Foundation's *Behind The Screen- The Global Edition* (5:04) | Uploaded `ar,en,es,fr,hi,id,ru,sw,uk`; requesting `fr` returns manual French. | Accepted; official Wikimedia Foundation channel. |
 | No captions | `aqz-KE-bpKQ`, Blender Foundation's *Big Buck Bunny* (10:35) | No manual or automatic tracks; returns `ErrTranscriptUnavailable`. | Accepted; open movie, but absence remains mutable. |
+
+The same short NASA video is the opt-in audio-acquisition fixture. On 2026-08-13
+the public `YTDLPAudioSource` successfully downloaded a non-empty audio-only
+artifact under a two-minute/10 MiB ceiling, rejected a one-second duration
+ceiling before download, and returned `ErrLimitExceeded` for a one-byte size
+ceiling. Pre-cancellation and invalid-limit cases also passed. Mid-download
+partial-file cleanup remains deterministic offline coverage rather than a live
+network timing assertion.
 
 The replaced candidates `ptfLfrW1648` and `BaW_jenozKc` were unavailable.
 `TcP3jk0yJLM` worked but was rejected because it is a four-hour livestream.

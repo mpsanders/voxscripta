@@ -10,6 +10,7 @@ import (
 )
 
 const defaultExecutable = "yt-dlp"
+const ignoreConfigArgument = "--ignore-config"
 
 var versionPattern = regexp.MustCompile(`^[0-9]{4}\.[0-9]{2}\.[0-9]{2}(?:[.+-][0-9A-Za-z.-]+)?$`)
 
@@ -39,7 +40,8 @@ func (c *Client) Version(ctx context.Context) (string, error) {
 	if c == nil || c.runner == nil {
 		return "", errors.New("yt-dlp client is not configured")
 	}
-	result, err := c.runner.Run(ctx, c.executable, "--version")
+	arguments := []string{ignoreConfigArgument, "--version"}
+	result, err := c.runner.Run(ctx, c.executable, arguments...)
 	if err != nil {
 		if ctxErr := ctx.Err(); ctxErr != nil {
 			return "", ctxErr

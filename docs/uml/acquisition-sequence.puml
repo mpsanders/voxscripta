@@ -2,15 +2,21 @@
 actor Caller
 participant "transcript API" as API
 participant "yt-dlp provider" as Provider
+participant "FallbackProvider" as Fallback
+participant "SpeechToTextProvider" as Speech
 participant "yt-dlp process" as YTDLP
 participant "WebVTT parser" as Parser
-participant "planned yt-dlp audio source" as AudioSource
-participant "optional FFmpeg processor\n(boundary decision pending)" as FFmpeg
+participant "yt-dlp audio source" as AudioSource
 participant "configured transcriber\n(adapter planned)" as Transcriber
 
 Caller -> API: Get(ctx, input, options)
 API -> API: parse video ID
-API -> Provider: Get(ctx, videoID, options)
+alt explicit fallback configured
+  API -> Fallback: Get(ctx, videoID, options)
+  Fallback -> Provider: Get(ctx, videoID, options)
+else caption provider only
+  API -> Provider: Get(ctx, videoID, options)
+end
 Provider -> YTDLP: inspect machine-readable metadata
 YTDLP --> Provider: available caption tracks
 Provider -> Provider: select by language and source policy
@@ -19,25 +25,31 @@ alt matching captions available
   YTDLP --> Provider: subtitle data
   Provider -> Parser: parse and normalize
   Parser --> Provider: ordered segments
-  Provider --> API: Transcript
+  alt explicit fallback configured
+    Provider --> Fallback: Transcript
+    Fallback --> API: Transcript
+  else caption provider only
+    Provider --> API: Transcript
+  end
   API --> Caller: Transcript
 else captions unavailable and explicit fallback configured
-  Provider --> API: ErrTranscriptUnavailable
-  API -> AudioSource: Acquire(ctx, videoID, limits)
+  Provider --> Fallback: ErrTranscriptUnavailable
+  Fallback -> Speech: Get(ctx, videoID, options)
+  Speech -> AudioSource: Acquire(ctx, videoID, limits)
   AudioSource -> YTDLP: inspect duration
   YTDLP --> AudioSource: duration and audio metadata
   AudioSource -> AudioSource: reject over-limit input
   AudioSource -> YTDLP: download audio to isolated storage
   YTDLP --> AudioSource: downloaded audio artifact
-  opt configured transcriber requires conversion
-    AudioSource -> FFmpeg: convert to required format
-    FFmpeg --> AudioSource: provider-ready audio
-  end
-  AudioSource --> API: bounded Audio
-  API -> API: verify duration and size
-  API -> Transcriber: Transcribe(ctx, audio, language hints)
-  Transcriber --> API: language, provider, segments
-  API -> API: close audio and validate Transcript
+  AudioSource --> Speech: checked Audio
+  Speech -> Speech: verify duration and size
+  Speech -> Transcriber: Transcribe(ctx, audio, language hints)
+  Transcriber --> Speech: language, provider, segments
+  Speech -> Speech: validate Transcript
+  Speech -> AudioSource: close audio and remove artifacts
+  Speech --> Fallback: speech-to-text Transcript
+  Fallback --> API: speech-to-text Transcript
+  API -> API: validate Transcript
   API --> Caller: speech-to-text Transcript
 else captions unavailable and no fallback configured
   Provider --> API: ErrTranscriptUnavailable

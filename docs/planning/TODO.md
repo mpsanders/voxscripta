@@ -74,12 +74,13 @@ This is the actionable project backlog. Check an item only when its implementati
 - [x] Document privacy, terms-of-service, copyright, rate-limit, and restricted-video considerations without claiming legal guarantees.
 - [x] Document the tested `yt-dlp` version policy and response to upstream breakage.
 - [x] Add changelog/release notes and a release checklist.
-- [x] Run `gofmt`, unit tests, integration tests, `go vet ./...`, and the race detector where supported (verified 2026-08-12).
+- [x] Run `gofmt`, unit tests, integration tests, `go vet ./...`, and the race detector where supported (verified 2026-08-13).
 - [x] Choose v0.1.0 as the initial release version and human-readable duration strings for CLI JSON.
 - [x] Add pinned Staticcheck 2026.1 and govulncheck v1.6.0 CI and Makefile gates.
-- [x] Run the local release-hardening suite; no reachable vulnerabilities were reported on 2026-08-12.
+- [x] Run the local release-hardening suite; no reachable vulnerabilities were reported on 2026-08-13.
 - [ ] Confirm the updated CI workflow and live integration matrix pass on the exact release commit.
-- [ ] Tag and publish v0.1.0, then perform the clean-install checks in `docs/RELEASING.md`.
+- [x] Create the annotated local v0.1.0 tag at the caption/fallback release commit.
+- [ ] Push/publish v0.1.0, then perform the clean-install checks in `docs/RELEASING.md`.
 
 ## Later: optional speech-to-text
 
@@ -92,13 +93,14 @@ adapter integration before the acquisition and prototype evidence it depends on.
 - [x] Separate audio acquisition from transcription provider interfaces and compose them through `SpeechToTextProvider`.
 - [x] Add provider-level duration and file-size guards before transcription.
 
-### 2. Bounded `yt-dlp` audio acquisition
+### 2. Checked `yt-dlp` audio acquisition
 
-- [ ] Inspect video duration before downloading audio and reject configured over-limit inputs before expensive work begins.
-- [ ] Download only audio with `yt-dlp` into isolated temporary storage without shell invocation.
-- [ ] Enforce configured file-size bounds during acquisition where possible and verify the final artifact metadata.
-- [ ] Guarantee downloaded audio and acquisition temp-file cleanup on success, failure, limit rejection, and cancellation.
-- [ ] Add offline fake-process tests and opt-in live tests for audio selection, limits, cancellation, malformed/missing output, and cleanup.
+- [x] Inspect video duration before downloading audio and reject configured over-limit inputs before expensive work begins.
+- [x] Download the best available audio-only format with `yt-dlp` into isolated temporary storage without shell invocation or ambient configuration.
+- [x] Ask `yt-dlp` to reject known oversized downloads and strictly verify the final artifact size; document that manifest/fragment transfer size is not a hard in-flight bound.
+- [x] Attempt and verify temporary-file cleanup on success, failure, limit rejection, and mid-download cancellation, and surface cleanup failures.
+- [x] Add offline fake-process tests for selection, limits, mid-download cancellation, malformed/missing output, and cleanup; add opt-in live success and known-limit cases.
+- [ ] Evaluate a portable strict in-flight disk/download byte bound for fragmented formats before describing `MaxBytes` as a hard acquisition limit.
 
 ### 3. Transcriber prototypes and architecture decision
 
@@ -120,3 +122,6 @@ adapter integration before the acquisition and prototype evidence it depends on.
 - [ ] Define and document whether partial transcription results are returned or discarded on provider failure or cancellation.
 - [ ] Compose the concrete speech-to-text provider with `FallbackProvider` without changing caption-first defaults.
 - [ ] Test no-caption fallback, transcription failure, cancellation, duration/size/cost limits, partial-result policy, and cleanup across acquisition, optional conversion, and transcription.
+- [ ] Define measurable transcript completeness/coverage and the policy for accepting, replacing, comparing, or merging incomplete captions with speech-to-text.
+- [ ] Expose deterministic caller-selected provider ordering and provenance for every acquisition/conversion/transcription stage.
+- [ ] Make the CLI try captions and every locally available or explicitly enabled transcription strategy; never infer permission for hosted cost/audio disclosure from ambient credentials alone.

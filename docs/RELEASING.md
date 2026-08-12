@@ -2,8 +2,9 @@
 
 ## Compatibility and documentation
 
-- Confirm the planned initial version, v0.1.0, and summarize user-visible
-  changes in `CHANGELOG.md`.
+- Confirm the intended release version and summarize user-visible changes in
+  the matching changelog section. The local v0.1.0 tag predates Unreleased
+  speech/audio work and must not be moved.
 - Review exported API changes and the risks in decision 0005.
 - Confirm README examples, dependency policy, diagrams, roadmap, and TODO match
   the implementation.

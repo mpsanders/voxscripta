@@ -15,13 +15,18 @@ in the error because future configuration may place secrets in them.
 Dependency probing uses `yt-dlp --version`. Discovery uses:
 
 ```console
-yt-dlp --dump-single-json --skip-download --no-warnings -- VIDEO_ID
+yt-dlp --ignore-config --dump-single-json --skip-download --no-warnings -- VIDEO_ID
 ```
 
-The decoder retains only the video ID, title, original language, and WebVTT
-entries from `subtitles` and `automatic_captions`. Unknown JSON fields and
+The decoder retains only the video ID, title, original language, duration/live
+status used by audio preflight, and WebVTT entries from `subtitles` and
+`automatic_captions`. Unknown JSON fields and
 non-WebVTT formats are ignored. Caption URLs remain internal and must not appear
 in errors or diagnostic metadata because they can contain signed parameters.
+All library-controlled invocations use `--ignore-config` so ambient options
+cannot change outputs, enable postprocessors or hooks, or write outside the
+isolated temporary directory. Explicit secure configuration may be introduced
+through a future API rather than inherited implicitly.
 
 Requested languages are evaluated in caller order. For each preference, an
 exact BCP 47 tag wins, followed by its base language, followed by another
@@ -50,5 +55,6 @@ deterministic and fully testable offline. Redaction is defense in depth rather
 than a guarantee that arbitrary upstream prose can never contain sensitive
 data, so callers should still treat provider failures as operational data. The
 command and JSON shape are an implementation contract, not yet a claimed
-minimum-version compatibility guarantee. Translated-track modeling, live
-fixtures, and opt-in integration tests remain separate work.
+minimum-version compatibility guarantee. Translation remains outside this
+caption contract; live caption and audio behavior is validated separately by
+the opt-in integration matrix.

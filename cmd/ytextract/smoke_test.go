@@ -99,7 +99,7 @@ import ("fmt"; "os"; "path/filepath"; "strings")
 func main() {
  mode := os.Getenv("VOXSCRIPTA_FAKE_MODE")
  args := os.Args[1:]
- if len(args) == 1 && args[0] == "--version" { fmt.Println("2026.07.04"); return }
+ for _, arg := range args { if arg == "--version" { fmt.Println("2026.07.04"); return } }
  for _, arg := range args { if arg == "--dump-single-json" {
   if mode == "failure" { fmt.Fprintln(os.Stderr, "upstream failed"); os.Exit(1) }
   if mode == "malformed" { fmt.Print("{"); return }

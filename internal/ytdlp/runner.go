@@ -1,7 +1,6 @@
 package ytdlp
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"os/exec"
@@ -10,6 +9,11 @@ import (
 )
 
 const maxDiagnosticLength = 2048
+
+const (
+	maxCapturedStdout = 8 << 20
+	maxCapturedStderr = 64 << 10
+)
 
 var (
 	urlDiagnosticPattern    = regexp.MustCompile(`https?://[^\s"']+`)
@@ -66,16 +70,51 @@ func (e *CommandError) Unwrap() error {
 // context controls process cancellation and deadlines.
 func (ExecRunner) Run(ctx context.Context, executable string, args ...string) (CommandResult, error) {
 	command := exec.CommandContext(ctx, executable, args...)
-	var stdout bytes.Buffer
-	var stderr bytes.Buffer
-	command.Stdout = &stdout
-	command.Stderr = &stderr
+	stdout := newBoundedBuffer(maxCapturedStdout)
+	stderr := newBoundedBuffer(maxCapturedStderr)
+	command.Stdout = stdout
+	command.Stderr = stderr
 	err := command.Run()
 	result := CommandResult{Stdout: stdout.Bytes(), Stderr: stderr.Bytes()}
 	if err != nil {
 		return result, &CommandError{Cause: err, Diagnostic: safeDiagnostic(stderr.String())}
 	}
 	return result, nil
+}
+
+type boundedBuffer struct {
+	contents []byte
+	limit    int
+}
+
+// newBoundedBuffer constructs a writer that retains at most limit bytes while
+// reporting all writes as consumed so subprocess output cannot grow memory
+// without bound or fail a command solely because diagnostic capture is full.
+func newBoundedBuffer(limit int) *boundedBuffer {
+	return &boundedBuffer{limit: limit}
+}
+
+// Write retains the available prefix of value and discards the remainder.
+func (b *boundedBuffer) Write(value []byte) (int, error) {
+	written := len(value)
+	remaining := b.limit - len(b.contents)
+	if remaining > 0 {
+		if remaining > len(value) {
+			remaining = len(value)
+		}
+		b.contents = append(b.contents, value[:remaining]...)
+	}
+	return written, nil
+}
+
+// Bytes returns the retained output prefix.
+func (b *boundedBuffer) Bytes() []byte {
+	return b.contents
+}
+
+// String returns the retained output prefix as text.
+func (b *boundedBuffer) String() string {
+	return string(b.contents)
 }
 
 // safeDiagnostic converts process stderr into a bounded single-line message
