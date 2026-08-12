@@ -46,24 +46,24 @@ This is the actionable project backlog. Check an item only when its implementati
 
 ## Public API
 
-- [ ] Design a simple default constructor and functional options without over-configuring the common case.
-- [ ] Allow explicit `yt-dlp` paths and injectable providers/runners for advanced use and testing.
-- [ ] Define defaults for languages, manual/automatic captions, translation, and fallback behavior.
-- [ ] Decide whether empty language preferences mean original language, environment locale, English, or provider-best; document the choice.
-- [ ] Ensure exported APIs are concurrency-safe where promised and document ownership of returned data.
+- [x] Design a simple default constructor and functional options without over-configuring the common case.
+- [x] Allow explicit `yt-dlp` paths and injectable providers for advanced use and testing; runner injection remains internal.
+- [x] Define current defaults for languages and manual/automatic captions; translated-caption behavior remains to be implemented.
+- [x] Decide whether empty language preferences mean original language, environment locale, English, or provider-best; original then provider-best is documented.
+- [x] Ensure exported APIs are concurrency-safe where promised and document ownership of returned data.
 - [ ] Add GoDoc to every function and method, with detailed purpose and parameter documentation for production code.
 - [ ] Add compile-tested examples for basic use, language selection, errors, and custom providers.
 - [ ] Review the API for semantic-versioning risks before the first release.
 
 ## Development CLI
 
-- [ ] Create a thin CLI that only parses flags, calls the library, and renders results.
-- [ ] Accept a video URL or ID and repeatable/preferential language input.
-- [ ] Add source-selection flags and a caller-controlled timeout.
-- [ ] Support plain-text and JSON output first.
-- [ ] Keep transcript output on stdout and diagnostics on stderr.
-- [ ] Define stable exit codes for invalid arguments, dependency problems, unavailable transcripts, and acquisition failures.
-- [ ] Add `--version` and a dependency diagnostic command or flag.
+- [x] Create a thin CLI that only parses flags, calls the library, and renders results.
+- [x] Accept a video URL or ID and repeatable/preferential language input.
+- [x] Add manual-only source selection and a caller-controlled timeout; translated-source selection remains future work.
+- [x] Support plain-text and JSON output first.
+- [x] Keep transcript output on stdout and diagnostics on stderr.
+- [x] Define stable exit codes for invalid arguments, dependency problems, unavailable transcripts, and acquisition failures.
+- [ ] Add a dependency diagnostic command or flag (`--version` is implemented).
 - [ ] Add CLI smoke tests and usage examples.
 
 ## Documentation and release readiness

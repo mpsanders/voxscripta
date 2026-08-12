@@ -4,6 +4,7 @@ skinparam packageStyle rectangle
 package "transcript (public)" {
   class Transcript
   class Segment
+  class Client
   interface Provider
   class Options
   class WebVTTParser
@@ -21,6 +22,7 @@ package "cmd/ytextract" {
 }
 
 CLI --> Provider : calls public API
+Client --> Provider : orchestrates
 Client --> CommandRunner
 Client --> Metadata : inspects
 Metadata *-- CaptionTrack

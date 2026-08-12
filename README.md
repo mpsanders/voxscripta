@@ -2,7 +2,7 @@
 
 VoxScripta is a library-first Go toolkit for acquiring normalized, timestamped transcripts from public YouTube videos. A small CLI is included as a development, testing, and diagnostic harness over the same public API.
 
-> **Status:** early development. The offline normalized core, `yt-dlp` caption discovery and selection, and isolated single-track retrieval are implemented. End-to-end provider orchestration and the public acquisition API are next. Public APIs may change before v1.
+> **Status:** early development. Caption discovery, selection, retrieval, WebVTT normalization, the public acquisition client, and a functional development CLI are implemented. Live integration coverage and API hardening remain before v1. Public APIs may change before v1.
 
 ## Why this project exists
 
@@ -47,9 +47,9 @@ no captions -> audio acquisition -> speech-to-text provider -> normalize
 
 The CLI will remain a thin API consumer. Extraction logic will not live in `cmd/`.
 
-## Proposed library usage
+## Library usage
 
-The module is `github.com/mpsanders/VoxScripta` and its public package name is `transcript`. Acquisition usage is expected to resemble the following once the default client is implemented:
+The module is `github.com/mpsanders/VoxScripta` and its public package name is `transcript`. The default client uses `yt-dlp`:
 
 ```go
 client, err := transcript.New(
@@ -60,7 +60,8 @@ if err != nil {
 }
 
 result, err := client.Get(ctx, "https://www.youtube.com/watch?v=VIDEO_ID", transcript.Options{
-	Languages: []string{"en-AU", "en"},
+	Languages:       []string{"en-AU", "en"},
+	AllowAutomatic: true,
 })
 if err != nil {
 	log.Fatal(err)
@@ -79,7 +80,7 @@ type Segment struct {
 }
 ```
 
-Exact exported types will be finalized before implementation is declared stable.
+The returned transcript is owned by the caller. A client may be reused concurrently; custom providers must provide their own concurrency safety.
 
 WebVTT data can already be parsed independently of a provider:
 
@@ -90,17 +91,20 @@ if err != nil {
 }
 ```
 
-## Proposed CLI usage
+## CLI usage
 
-The development command is `ytextract`. Transcript acquisition flags are planned to support workflows like:
+The development command is `ytextract`:
 
 ```console
 ytextract --language en-AU --language en VIDEO_URL
 ytextract --format json VIDEO_ID
 ytextract --timeout 30s VIDEO_URL
+ytextract --manual-only VIDEO_URL
 ```
 
 Transcript data will be written to stdout and diagnostics to stderr so the command can be composed with other tools.
+
+The CLI includes automatic captions by default. In the library, automatic captions are explicit: set `Options.AllowAutomatic` to `true`. Empty language preferences select the video's reported original language when possible, then deterministically fall back to the first eligible track. Translated-caption acquisition is reserved for a later milestone; `AllowTranslated` currently does not enable a translation request.
 
 ## Runtime dependencies
 

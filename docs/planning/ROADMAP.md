@@ -54,8 +54,9 @@ Status: in progress. Direct context-aware command execution, version probing,
 narrow metadata decoding, internal manual/automatic track modeling,
 deterministic language/source selection, and isolated single-track WebVTT
 retrieval with guaranteed temporary-file cleanup are implemented and tested
-offline. Provider orchestration and live contract validation remain
-outstanding.
+offline. Public provider orchestration now connects these pieces through
+parsing and normalized results. Broader failure tests and live contract
+validation remain outstanding.
 
 Connect the normalized core to the primary acquisition mechanism.
 
@@ -76,6 +77,11 @@ Exit criteria:
 - Missing or incompatible `yt-dlp` produces an actionable error.
 
 ## Milestone 3: Stable library API and development CLI
+
+Status: in progress. A default constructor, executable and custom-provider
+options, validated acquisition, and a thin CLI with language, source, timeout,
+text/JSON, version, and stable error exits are implemented. API hardening,
+examples, dependency diagnostics, and full CLI smoke coverage remain.
 
 Make the library pleasant to consume and use the CLI to prove that boundary.
 
