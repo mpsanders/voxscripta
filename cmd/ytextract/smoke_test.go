@@ -23,7 +23,8 @@ func TestCLISmoke(t *testing.T) {
 		wantStderr string
 	}{
 		{name: "text output", mode: "success", args: []string{"abcdefghijk"}, wantStdout: "Hello world\n"},
-		{name: "JSON output", mode: "success", args: []string{"--format", "json", "abcdefghijk"}, wantStdout: `"video_id": "abcdefghijk"`},
+		{name: "dependency check", mode: "success", args: []string{"--check"}, wantStdout: "yt-dlp 2026.07.04 ready\n"},
+		{name: "JSON output", mode: "success", args: []string{"--format", "json", "abcdefghijk"}, wantStdout: `"end": "1s"`},
 		{name: "manual only", mode: "success", args: []string{"--manual-only", "abcdefghijk"}, wantStdout: "Hello world\n"},
 		{name: "missing dependency", args: []string{"--yt-dlp", filepath.Join(t.TempDir(), "missing"), "abcdefghijk"}, wantCode: 3, wantStderr: "missing dependency"},
 		{name: "unavailable transcript", mode: "unavailable", args: []string{"abcdefghijk"}, wantCode: 4, wantStderr: "transcript unavailable"},

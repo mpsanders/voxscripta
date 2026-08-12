@@ -81,13 +81,14 @@ Exit criteria:
 
 ## Milestone 3: Stable library API and development CLI
 
-Status: in progress. A default constructor, executable and custom-provider
+Status: complete. A default constructor, executable and custom-provider
 options, validated acquisition, and a thin CLI with language, source, timeout,
 text/JSON, version, and stable error exits are implemented. Full process-level
 CLI smoke coverage verifies text and JSON output plus stable failure exits
-without network access. API stability review and a dependency diagnostic
-command remain. Compile-tested examples cover basic use, language selection,
-errors, custom providers, and standalone WebVTT parsing.
+without network access. A CLI-only dependency diagnostic checks the configured
+yt-dlp version without expanding the public API. The pre-v1 API review is
+recorded in decision 0005. Compile-tested examples cover basic use, language
+selection, errors, custom providers, and standalone WebVTT parsing.
 
 Make the library pleasant to consume and use the CLI to prove that boundary.
 
@@ -107,6 +108,13 @@ Exit criteria:
 - API and CLI behavior are documented in the README.
 
 ## Milestone 4: Hardening and first release
+
+Status: in progress. Cross-platform CI, formatting, vet, and deterministic test
+gates are established. Responsible-use and upstream-breakage guidance, a
+changelog, and a release checklist are documented. Race coverage now runs in
+CI. The initial release target is v0.1.0, with a documented human-readable CLI
+JSON contract. Vulnerability/static-analysis policy and final release
+verification remain.
 
 Prepare the caption-only implementation for dependable reuse.
 

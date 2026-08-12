@@ -87,7 +87,8 @@ fmt.Println(result.Text())
 The normalized domain model should retain at least:
 
 - video ID and, when available, title;
-- selected language and whether it is translated;
+- selected language and source kind; a future translation interface must also
+  identify source and target languages;
 - source kind (manual, automatic, or speech-to-text);
 - ordered segments with start time, end time, and text; and
 - provider metadata useful for diagnosis without coupling callers to raw provider output.

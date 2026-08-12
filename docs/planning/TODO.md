@@ -48,22 +48,22 @@ This is the actionable project backlog. Check an item only when its implementati
 
 - [x] Design a simple default constructor and functional options without over-configuring the common case.
 - [x] Allow explicit `yt-dlp` paths and injectable providers for advanced use and testing; runner injection remains internal.
-- [x] Define current defaults for languages and manual/automatic captions; translated-caption behavior remains to be implemented.
+- [x] Define current defaults for languages and manual/automatic captions; translation is deliberately outside the caption-only API.
 - [x] Decide whether empty language preferences mean original language, environment locale, English, or provider-best; original then provider-best is documented.
 - [x] Ensure exported APIs are concurrency-safe where promised and document ownership of returned data.
 - [x] Add GoDoc to every function and method, with detailed purpose and parameter documentation for production code.
 - [x] Add compile-tested examples for basic use, language selection, errors, custom providers, and standalone parsing.
-- [ ] Review the API for semantic-versioning risks before the first release.
+- [x] Review the API for semantic-versioning risks before the first release; decision 0005 records remaining pre-v1 risks.
 
 ## Development CLI
 
 - [x] Create a thin CLI that only parses flags, calls the library, and renders results.
 - [x] Accept a video URL or ID and repeatable/preferential language input.
-- [x] Add manual-only source selection and a caller-controlled timeout; translated-source selection remains future work.
+- [x] Add manual-only source selection and a caller-controlled timeout.
 - [x] Support plain-text and JSON output first.
 - [x] Keep transcript output on stdout and diagnostics on stderr.
 - [x] Define stable exit codes for invalid arguments, dependency problems, unavailable transcripts, and acquisition failures.
-- [ ] Add a dependency diagnostic command or flag (`--version` is implemented).
+- [x] Add a dependency diagnostic command or flag (`--check` probes the configured yt-dlp executable without network access).
 - [x] Add CLI smoke tests and usage examples; smoke tests build the real command and use an offline fake `yt-dlp` process.
 
 ## Documentation and release readiness
@@ -71,10 +71,11 @@ This is the actionable project backlog. Check an item only when its implementati
 - [x] Create PlantUML package/class and acquisition sequence diagrams under `docs/uml`.
 - [x] Keep `GOAL.md`, `ROADMAP.md`, `TODO.md`, and `IDEAS.md` aligned with implementation decisions through the normalized-core milestone.
 - [x] Expand the README with the real module path, supported versions, installation, API examples, CLI examples, and limitations.
-- [ ] Document privacy, terms-of-service, copyright, rate-limit, and restricted-video considerations without claiming legal guarantees.
-- [ ] Document the tested `yt-dlp` version policy and response to upstream breakage.
-- [ ] Add changelog/release notes and a release checklist.
-- [ ] Run `gofmt`, unit tests, integration tests, `go vet ./...`, and the race detector where supported.
+- [x] Document privacy, terms-of-service, copyright, rate-limit, and restricted-video considerations without claiming legal guarantees.
+- [x] Document the tested `yt-dlp` version policy and response to upstream breakage.
+- [x] Add changelog/release notes and a release checklist.
+- [x] Run `gofmt`, unit tests, integration tests, `go vet ./...`, and the race detector where supported (verified 2026-08-12).
+- [x] Choose v0.1.0 as the initial release version and human-readable duration strings for CLI JSON.
 
 ## Later: optional speech-to-text
 

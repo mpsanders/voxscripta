@@ -2,7 +2,11 @@
 
 VoxScripta is a library-first Go toolkit for acquiring normalized, timestamped transcripts from public YouTube videos. A small CLI is included as a development, testing, and diagnostic harness over the same public API.
 
-> **Status:** early development. Caption discovery, selection, retrieval, WebVTT normalization, the public acquisition client, live integration coverage, and an offline-smoke-tested development CLI are implemented. API hardening remains before v1. Public APIs may change before v1.
+> **Status:** caption-only development release. Caption discovery, selection,
+> retrieval, WebVTT normalization, the public acquisition client, live
+> integration coverage, and an offline-smoke-tested development CLI are
+> implemented. Release hardening remains before v1. Public APIs may change
+> before v1.
 
 ## Why this project exists
 
@@ -105,11 +109,20 @@ ytextract --language en-AU --language en VIDEO_URL
 ytextract --format json VIDEO_ID
 ytextract --timeout 30s VIDEO_URL
 ytextract --manual-only VIDEO_URL
+ytextract --check
+ytextract --check --yt-dlp /path/to/yt-dlp
 ```
 
 Transcript data will be written to stdout and diagnostics to stderr so the command can be composed with other tools.
 
-The CLI includes automatic captions by default. In the library, automatic captions are explicit: set `Options.AllowAutomatic` to `true`. Empty language preferences select the video's reported original language when possible, then deterministically fall back to the first eligible track. Translated-caption acquisition is reserved for a later milestone; `AllowTranslated` currently does not enable a translation request.
+The CLI includes automatic captions by default. In the library, automatic captions are explicit: set `Options.AllowAutomatic` to `true`. Empty language preferences select the video's reported original language when possible, then deterministically fall back to the first eligible track. Translation is outside the caption-only API and may be added later behind a distinct interface.
+
+CLI JSON uses human-readable Go duration strings such as `"0s"`, `"1.25s"`,
+and `"2m3s"` for segment timestamps. It retains the transcript's video,
+language, source, provider, and segment structure.
+
+`--check` verifies that the configured `yt-dlp` executable starts and reports
+its version. It performs no video or network acquisition.
 
 ## Runtime dependencies
 
@@ -125,8 +138,7 @@ The exact configurable policy will be validated during implementation. The worki
 2. manual captions matching an allowed language fallback;
 3. automatic captions matching the requested language;
 4. automatic captions matching an allowed language fallback;
-5. translated captions only when enabled; and
-6. speech-to-text only when explicitly configured and appropriate.
+5. speech-to-text only when explicitly configured and appropriate.
 
 The result will report what was actually selected.
 
@@ -167,6 +179,10 @@ Network-dependent `yt-dlp` tests are opt-in so the normal unit-test suite remain
 - [Ideas](docs/planning/IDEAS.md) holds possible future work that is not yet committed.
 - [Live test-video matrix](docs/planning/TEST_VIDEOS.md) records proposed integration fixtures, provenance, validation, and replacement policy.
 - [Design conversation](docs/planning/YouTube%20Transcript%20Extraction%20Methods.md) records the initial exploration of extraction approaches.
+- [Responsible-use guidance](docs/RESPONSIBLE_USE.md) covers privacy, rights,
+  restricted content, rate limits, retention, and caption accuracy.
+- [Release checklist](docs/RELEASING.md) and [changelog](CHANGELOG.md) describe
+  the pre-release verification and publication process.
 
 ## Contributing
 

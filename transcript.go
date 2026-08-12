@@ -17,8 +17,6 @@ const (
 	SourceManual SourceKind = "manual"
 	// SourceAutomatic identifies captions generated automatically by YouTube.
 	SourceAutomatic SourceKind = "automatic"
-	// SourceTranslated identifies captions translated from another caption track.
-	SourceTranslated SourceKind = "translated"
 	// SourceSpeechToText identifies captions generated from the video's audio.
 	SourceSpeechToText SourceKind = "speech_to_text"
 )
@@ -62,13 +60,12 @@ type ProviderMetadata struct {
 
 // Transcript is a normalized transcript whose segments are ordered by Start.
 type Transcript struct {
-	VideoID    string           `json:"video_id"`
-	Title      string           `json:"title,omitempty"`
-	Language   Language         `json:"language"`
-	Source     SourceKind       `json:"source"`
-	Translated bool             `json:"translated"`
-	Provider   ProviderMetadata `json:"provider"`
-	Segments   []Segment        `json:"segments"`
+	VideoID  string           `json:"video_id"`
+	Title    string           `json:"title,omitempty"`
+	Language Language         `json:"language"`
+	Source   SourceKind       `json:"source"`
+	Provider ProviderMetadata `json:"provider"`
+	Segments []Segment        `json:"segments"`
 }
 
 // Validate verifies the transcript's required metadata and segment invariants.
@@ -112,7 +109,7 @@ func (t Transcript) Text() string {
 // valid reports whether s is one of the defined transcript source kinds.
 func (s SourceKind) valid() bool {
 	switch s {
-	case SourceManual, SourceAutomatic, SourceTranslated, SourceSpeechToText:
+	case SourceManual, SourceAutomatic, SourceSpeechToText:
 		return true
 	default:
 		return false
@@ -123,9 +120,8 @@ func (s SourceKind) valid() bool {
 // are evaluated in order; an empty list asks the provider for the original or
 // otherwise best available language.
 type Options struct {
-	Languages       []string
-	AllowAutomatic  bool
-	AllowTranslated bool
+	Languages      []string
+	AllowAutomatic bool
 }
 
 // Provider acquires and normalizes a transcript for videoID. Implementations

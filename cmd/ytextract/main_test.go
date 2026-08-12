@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 	"testing"
+	"time"
 
 	transcript "github.com/mpsanders/VoxScripta"
 )
@@ -22,6 +23,8 @@ func TestRunWithoutAcquisition(t *testing.T) {
 		wantStderr string
 	}{
 		{name: "version", args: []string{"--version"}, wantCode: 0, wantStdout: "dev\n"},
+		{name: "check with video", args: []string{"--check", "dQw4w9WgXcQ"}, wantCode: 2, wantStderr: "usage:"},
+		{name: "check with zero timeout", args: []string{"--check", "--timeout", "0s"}, wantCode: 2, wantStderr: "usage:"},
 		{name: "missing video", wantCode: 2, wantStderr: "usage:"},
 		{name: "multiple videos", args: []string{"dQw4w9WgXcQ", "aqz-KE-bpKQ"}, wantCode: 2, wantStderr: "usage:"},
 		{name: "unsupported format", args: []string{"--format", "xml", "dQw4w9WgXcQ"}, wantCode: 2, wantStderr: "usage:"},
@@ -43,6 +46,35 @@ func TestRunWithoutAcquisition(t *testing.T) {
 			}
 			if !strings.Contains(stderr.String(), test.wantStderr) {
 				t.Errorf("stderr = %q, want substring %q", stderr.String(), test.wantStderr)
+			}
+		})
+	}
+}
+
+// TestNewJSONTranscript verifies the CLI's human-readable timestamp contract.
+func TestNewJSONTranscript(t *testing.T) {
+	tests := []struct {
+		name      string
+		segments  []transcript.Segment
+		wantStart string
+		wantEnd   string
+		wantCount int
+	}{
+		{name: "nil segments", wantCount: 0},
+		{name: "zero values", segments: []transcript.Segment{{}}, wantStart: "0s", wantEnd: "0s", wantCount: 1},
+		{name: "whole seconds", segments: []transcript.Segment{{Start: time.Second, End: 2 * time.Second}}, wantStart: "1s", wantEnd: "2s", wantCount: 1},
+		{name: "fractional seconds", segments: []transcript.Segment{{Start: 1250 * time.Millisecond, End: 2500 * time.Millisecond}}, wantStart: "1.25s", wantEnd: "2.5s", wantCount: 1},
+		{name: "minutes", segments: []transcript.Segment{{Start: 2 * time.Minute, End: 2*time.Minute + 3*time.Second}}, wantStart: "2m0s", wantEnd: "2m3s", wantCount: 1},
+		{name: "multiple segments", segments: []transcript.Segment{{End: time.Second}, {Start: time.Second, End: 2 * time.Second}}, wantStart: "0s", wantEnd: "1s", wantCount: 2},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got := newJSONTranscript(transcript.Transcript{Segments: test.segments})
+			if len(got.Segments) != test.wantCount {
+				t.Fatalf("len(Segments) = %d, want %d", len(got.Segments), test.wantCount)
+			}
+			if test.wantCount > 0 && (got.Segments[0].Start != test.wantStart || got.Segments[0].End != test.wantEnd) {
+				t.Errorf("first segment = %#v, want start %q and end %q", got.Segments[0], test.wantStart, test.wantEnd)
 			}
 		})
 	}

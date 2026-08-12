@@ -20,9 +20,18 @@ The project supports the current `yt-dlp` nightly channel and current stable
 release. Because YouTube changes independently, users should update an old
 installation before reporting extraction failures. The live integration
 contract was validated with `yt-dlp 2026.07.04` on 2026-08-12. This is a
-known-good version, not yet a claimed minimum version. After upstream updates,
-run `make integration`. This target sets `VOXSCRIPTA_YTDLP_INTEGRATION=1` and
-runs only the live integration suite; it requires network access.
+known-good version, not a claimed minimum version. Check an installation with
+`ytextract --check`; this invokes only `yt-dlp --version` and performs no video
+or network acquisition.
+
+After an upstream update, run `make integration`. This target sets
+`VOXSCRIPTA_YTDLP_INTEGRATION=1` and runs only the live integration suite; it
+requires network access. If a previously passing test fails, first reproduce
+with the recorded known-good version. For a new-version regression, capture
+sanitized metadata and command behavior, update the internal adapter and
+offline fixtures, rerun the full matrix, and record the newly validated version
+here and in `TEST_VIDEOS.md`. Security fixes can supersede a known-good version;
+do not recommend a vulnerable pin merely to preserve extraction behavior.
 
 `ffmpeg` is not required for caption-only operation.
 
