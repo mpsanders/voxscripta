@@ -50,6 +50,11 @@ Exit criteria:
 
 ## Milestone 2: `yt-dlp` caption provider
 
+Status: in progress. Direct context-aware command execution, version probing,
+narrow metadata decoding, internal manual/automatic track modeling, and
+deterministic language/source selection are implemented and tested offline.
+Caption retrieval and live contract validation remain outstanding.
+
 Connect the normalized core to the primary acquisition mechanism.
 
 Deliverables:

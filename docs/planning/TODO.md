@@ -30,13 +30,13 @@ This is the actionable project backlog. Check an item only when its implementati
 
 ## `yt-dlp` integration
 
-- [ ] Implement an injectable, context-aware command runner without shell invocation.
-- [ ] Add executable discovery and version reporting/validation.
-- [ ] Inspect video metadata through stable machine-readable output.
-- [ ] Decode only the required metadata fields and tolerate unrelated additions.
-- [ ] Represent manual and automatic caption tracks without exposing raw `yt-dlp` structures publicly.
-- [ ] Specify language matching, regional fallback, original-language behavior, and manual-versus-auto preference.
-- [ ] Implement deterministic track selection with extensive offline tests.
+- [x] Implement an injectable, context-aware command runner without shell invocation.
+- [x] Add executable discovery and version reporting/validation.
+- [x] Inspect video metadata through stable machine-readable output.
+- [x] Decode only the required metadata fields and tolerate unrelated additions.
+- [x] Represent manual and automatic caption tracks without exposing raw `yt-dlp` structures publicly.
+- [x] Specify language matching, regional fallback, original-language behavior, and manual-versus-auto preference.
+- [x] Implement deterministic track selection with extensive offline tests.
 - [ ] Retrieve exactly one selected subtitle track in the chosen format.
 - [ ] Isolate temporary files, constrain generated paths, and guarantee cleanup.
 - [ ] Redact signed URLs, cookies, and command secrets from diagnostics.

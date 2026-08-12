@@ -10,8 +10,10 @@ package "transcript (public)" {
 }
 
 package "internal/ytdlp" {
-  class ProviderImpl
+  class Client
   interface CommandRunner
+  class Metadata
+  class CaptionTrack
 }
 
 package "cmd/ytextract" {
@@ -19,8 +21,9 @@ package "cmd/ytextract" {
 }
 
 CLI --> Provider : calls public API
-ProviderImpl ..|> Provider
-ProviderImpl --> CommandRunner
+Client --> CommandRunner
+Client --> Metadata : inspects
+Metadata *-- CaptionTrack
 Transcript *-- Segment
 WebVTTParser --> Segment : normalizes
 @enduml

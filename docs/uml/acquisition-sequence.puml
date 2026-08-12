@@ -10,7 +10,7 @@ API -> API: parse video ID
 API -> Provider: Get(ctx, videoID, options)
 Provider -> YTDLP: inspect machine-readable metadata
 YTDLP --> Provider: available caption tracks
-Provider -> Provider: select one track
+Provider -> Provider: select by language and source policy
 Provider -> YTDLP: retrieve selected WebVTT track
 YTDLP --> Provider: subtitle data
 Provider -> Parser: parse and normalize
