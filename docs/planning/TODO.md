@@ -41,7 +41,7 @@ This is the actionable project backlog. Check an item only when its implementati
 - [x] Retrieve exactly one selected subtitle track in the chosen format.
 - [x] Isolate temporary files, constrain generated paths, and guarantee cleanup.
 - [x] Redact signed URLs, cookies, and command secrets from bounded subprocess diagnostics; command arguments are never retained in errors.
-- [ ] Cover process failure, malformed JSON, missing output, non-zero exit, timeout, and cancellation.
+- [x] Cover process failure, malformed JSON, missing output, non-zero exit, timeout, and cancellation.
 - [x] Add opt-in integration tests for manual, automatic, multilingual, unavailable, and cancellation cases.
 
 ## Public API
@@ -51,7 +51,7 @@ This is the actionable project backlog. Check an item only when its implementati
 - [x] Define current defaults for languages and manual/automatic captions; translated-caption behavior remains to be implemented.
 - [x] Decide whether empty language preferences mean original language, environment locale, English, or provider-best; original then provider-best is documented.
 - [x] Ensure exported APIs are concurrency-safe where promised and document ownership of returned data.
-- [ ] Add GoDoc to every function and method, with detailed purpose and parameter documentation for production code.
+- [x] Add GoDoc to every function and method, with detailed purpose and parameter documentation for production code.
 - [x] Add compile-tested examples for basic use, language selection, errors, custom providers, and standalone parsing.
 - [ ] Review the API for semantic-versioning risks before the first release.
 
@@ -64,13 +64,13 @@ This is the actionable project backlog. Check an item only when its implementati
 - [x] Keep transcript output on stdout and diagnostics on stderr.
 - [x] Define stable exit codes for invalid arguments, dependency problems, unavailable transcripts, and acquisition failures.
 - [ ] Add a dependency diagnostic command or flag (`--version` is implemented).
-- [ ] Add CLI smoke tests and usage examples.
+- [x] Add CLI smoke tests and usage examples; smoke tests build the real command and use an offline fake `yt-dlp` process.
 
 ## Documentation and release readiness
 
 - [x] Create PlantUML package/class and acquisition sequence diagrams under `docs/uml`.
 - [x] Keep `GOAL.md`, `ROADMAP.md`, `TODO.md`, and `IDEAS.md` aligned with implementation decisions through the normalized-core milestone.
-- [ ] Expand the README with the real module path, supported versions, installation, API examples, CLI examples, and limitations.
+- [x] Expand the README with the real module path, supported versions, installation, API examples, CLI examples, and limitations.
 - [ ] Document privacy, terms-of-service, copyright, rate-limit, and restricted-video considerations without claiming legal guarantees.
 - [ ] Document the tested `yt-dlp` version policy and response to upstream breakage.
 - [ ] Add changelog/release notes and a release checklist.

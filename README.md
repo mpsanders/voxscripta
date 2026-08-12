@@ -2,7 +2,7 @@
 
 VoxScripta is a library-first Go toolkit for acquiring normalized, timestamped transcripts from public YouTube videos. A small CLI is included as a development, testing, and diagnostic harness over the same public API.
 
-> **Status:** early development. Caption discovery, selection, retrieval, WebVTT normalization, the public acquisition client, and a functional development CLI are implemented. Live integration coverage and API hardening remain before v1. Public APIs may change before v1.
+> **Status:** early development. Caption discovery, selection, retrieval, WebVTT normalization, the public acquisition client, live integration coverage, and an offline-smoke-tested development CLI are implemented. API hardening remains before v1. Public APIs may change before v1.
 
 ## Why this project exists
 
@@ -157,9 +157,7 @@ Run `make help` for the complete target list, including formatting, race testing
 module tidying, and cleanup. `make check` performs the same core checks expected
 before submitting a change.
 
-Network-dependent `yt-dlp` tests will be opt-in so the normal unit-test suite remains fast and deterministic.
-Run them explicitly with `make integration`; this requires `yt-dlp` on `PATH`
-and public network access. `make test` continues to skip the live suite.
+Network-dependent `yt-dlp` tests are opt-in so the normal unit-test suite remains deterministic. The ordinary suite includes process-level CLI smoke tests backed by a temporary fake provider executable. Run the live tests explicitly with `make integration`; this requires `yt-dlp` on `PATH` and public network access. `make test` continues to skip the live suite.
 
 ## Project direction
 

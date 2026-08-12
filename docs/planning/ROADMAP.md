@@ -50,15 +50,16 @@ Exit criteria:
 
 ## Milestone 2: `yt-dlp` caption provider
 
-Status: in progress. Direct context-aware command execution, version probing,
+Status: complete. Direct context-aware command execution, version probing,
 narrow metadata decoding, internal manual/automatic track modeling,
 deterministic language/source selection, and isolated single-track WebVTT
 retrieval with guaranteed temporary-file cleanup are implemented and tested
-offline. Public provider orchestration now connects these pieces through
-parsing and normalized results. Subprocess failures retain bounded, redacted
-stderr without exposing command arguments. The live matrix now validates
-manual, automatic, multilingual, unavailable, and cancellation behavior with
-`yt-dlp 2026.07.04`.
+offline. Public provider orchestration connects these pieces through parsing
+and normalized results. Offline tests cover malformed metadata, missing
+output, process failures, timeouts, cancellation, and cleanup. Subprocess
+failures retain bounded, redacted stderr without exposing command arguments.
+The live matrix validates manual, automatic, multilingual, unavailable, and
+cancellation behavior with `yt-dlp 2026.07.04`.
 
 Connect the normalized core to the primary acquisition mechanism.
 
@@ -82,10 +83,11 @@ Exit criteria:
 
 Status: in progress. A default constructor, executable and custom-provider
 options, validated acquisition, and a thin CLI with language, source, timeout,
-text/JSON, version, and stable error exits are implemented. API hardening,
-dependency diagnostics, and full CLI smoke coverage remain. Compile-tested
-examples now cover basic use, language selection, errors, custom providers,
-and standalone WebVTT parsing.
+text/JSON, version, and stable error exits are implemented. Full process-level
+CLI smoke coverage verifies text and JSON output plus stable failure exits
+without network access. API stability review and a dependency diagnostic
+command remain. Compile-tested examples cover basic use, language selection,
+errors, custom providers, and standalone WebVTT parsing.
 
 Make the library pleasant to consume and use the CLI to prove that boundary.
 
