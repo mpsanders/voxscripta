@@ -40,7 +40,7 @@ This is the actionable project backlog. Check an item only when its implementati
 - [x] Implement deterministic track selection with extensive offline tests.
 - [x] Retrieve exactly one selected subtitle track in the chosen format.
 - [x] Isolate temporary files, constrain generated paths, and guarantee cleanup.
-- [ ] Redact signed URLs, cookies, and command secrets from diagnostics.
+- [x] Redact signed URLs, cookies, and command secrets from bounded subprocess diagnostics; command arguments are never retained in errors.
 - [ ] Cover process failure, malformed JSON, missing output, non-zero exit, timeout, and cancellation.
 - [ ] Add opt-in integration tests that skip clearly when `yt-dlp` or network access is unavailable.
 
@@ -52,7 +52,7 @@ This is the actionable project backlog. Check an item only when its implementati
 - [x] Decide whether empty language preferences mean original language, environment locale, English, or provider-best; original then provider-best is documented.
 - [x] Ensure exported APIs are concurrency-safe where promised and document ownership of returned data.
 - [ ] Add GoDoc to every function and method, with detailed purpose and parameter documentation for production code.
-- [ ] Add compile-tested examples for basic use, language selection, errors, and custom providers.
+- [x] Add compile-tested examples for basic use, language selection, errors, custom providers, and standalone parsing.
 - [ ] Review the API for semantic-versioning risks before the first release.
 
 ## Development CLI

@@ -82,6 +82,11 @@ type Segment struct {
 
 The returned transcript is owned by the caller. A client may be reused concurrently; custom providers must provide their own concurrency safety.
 
+Provider process errors include at most 2 KiB of normalized stderr. URLs and
+common credential-bearing values are redacted, and command arguments are never
+included. Applications should still handle diagnostics as potentially
+sensitive operational data rather than publishing them verbatim.
+
 WebVTT data can already be parsed independently of a provider:
 
 ```go

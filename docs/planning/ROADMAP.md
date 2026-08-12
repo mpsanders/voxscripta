@@ -55,8 +55,9 @@ narrow metadata decoding, internal manual/automatic track modeling,
 deterministic language/source selection, and isolated single-track WebVTT
 retrieval with guaranteed temporary-file cleanup are implemented and tested
 offline. Public provider orchestration now connects these pieces through
-parsing and normalized results. Broader failure tests and live contract
-validation remain outstanding.
+parsing and normalized results. Subprocess failures retain bounded, redacted
+stderr without exposing command arguments. Live contract validation remains
+outstanding.
 
 Connect the normalized core to the primary acquisition mechanism.
 
@@ -81,7 +82,9 @@ Exit criteria:
 Status: in progress. A default constructor, executable and custom-provider
 options, validated acquisition, and a thin CLI with language, source, timeout,
 text/JSON, version, and stable error exits are implemented. API hardening,
-examples, dependency diagnostics, and full CLI smoke coverage remain.
+dependency diagnostics, and full CLI smoke coverage remain. Compile-tested
+examples now cover basic use, language selection, errors, custom providers,
+and standalone WebVTT parsing.
 
 Make the library pleasant to consume and use the CLI to prove that boundary.
 

@@ -7,7 +7,10 @@ Status: accepted, 2026-08-12
 The provider invokes `yt-dlp` directly through `exec.CommandContext`; it never
 uses a command shell. The runner is injectable and captures stdout and stderr
 separately. Cancellation is returned as `context.Canceled` or
-`context.DeadlineExceeded`.
+`context.DeadlineExceeded`. Failed commands may expose a single-line stderr
+diagnostic capped at 2 KiB. HTTP(S) URLs and common authorization, cookie,
+proxy, and token values are redacted first. Command arguments are not retained
+in the error because future configuration may place secrets in them.
 
 Dependency probing uses `yt-dlp --version`. Discovery uses:
 
@@ -42,8 +45,10 @@ download target.
 
 ## Consequences
 
-Discovery, selection, and isolated retrieval are deterministic and fully
-testable offline. The command and JSON shape are an implementation contract,
-not yet a claimed minimum-version compatibility guarantee. Provider
-orchestration, translated-track modeling, live fixtures, and opt-in integration
-tests remain separate work.
+Discovery, selection, isolated retrieval, and diagnostic sanitization are
+deterministic and fully testable offline. Redaction is defense in depth rather
+than a guarantee that arbitrary upstream prose can never contain sensitive
+data, so callers should still treat provider failures as operational data. The
+command and JSON shape are an implementation contract, not yet a claimed
+minimum-version compatibility guarantee. Translated-track modeling, live
+fixtures, and opt-in integration tests remain separate work.
