@@ -31,9 +31,19 @@ tried first. If it is absent or unavailable, the first deterministic eligible
 manual track is selected, then the first automatic track when allowed. Explicit
 language preferences never fall back to an unrelated language.
 
+Retrieval asks `yt-dlp` for only the selected language and source, fixes the
+subtitle format to WebVTT, and writes into a newly created private temporary
+directory. The implementation accepts exactly one regular `.vtt` file directly
+inside that directory, rejects missing or ambiguous output, reads it, and
+removes the entire directory on every return path. Manual and automatic tracks
+use `--write-subs` and `--write-auto-subs`, respectively. The signed URL found
+during discovery is deliberately not passed through diagnostics or used as the
+download target.
+
 ## Consequences
 
-Discovery and selection are deterministic and fully testable offline. The
-command and JSON shape are an implementation contract, not yet a claimed
-minimum-version compatibility guarantee. Retrieval, translated-track modeling,
-live fixtures, and opt-in integration tests remain separate work.
+Discovery, selection, and isolated retrieval are deterministic and fully
+testable offline. The command and JSON shape are an implementation contract,
+not yet a claimed minimum-version compatibility guarantee. Provider
+orchestration, translated-track modeling, live fixtures, and opt-in integration
+tests remain separate work.

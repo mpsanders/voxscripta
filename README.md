@@ -2,7 +2,7 @@
 
 VoxScripta is a library-first Go toolkit for acquiring normalized, timestamped transcripts from public YouTube videos. A small CLI is included as a development, testing, and diagnostic harness over the same public API.
 
-> **Status:** early development. The offline normalized core, including WebVTT parsing and rolling-caption normalization, is implemented. `yt-dlp` acquisition is next. Public APIs may change before v1.
+> **Status:** early development. The offline normalized core, `yt-dlp` caption discovery and selection, and isolated single-track retrieval are implemented. End-to-end provider orchestration and the public acquisition API are next. Public APIs may change before v1.
 
 ## Why this project exists
 

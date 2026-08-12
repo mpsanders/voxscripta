@@ -37,8 +37,8 @@ This is the actionable project backlog. Check an item only when its implementati
 - [x] Represent manual and automatic caption tracks without exposing raw `yt-dlp` structures publicly.
 - [x] Specify language matching, regional fallback, original-language behavior, and manual-versus-auto preference.
 - [x] Implement deterministic track selection with extensive offline tests.
-- [ ] Retrieve exactly one selected subtitle track in the chosen format.
-- [ ] Isolate temporary files, constrain generated paths, and guarantee cleanup.
+- [x] Retrieve exactly one selected subtitle track in the chosen format.
+- [x] Isolate temporary files, constrain generated paths, and guarantee cleanup.
 - [ ] Redact signed URLs, cookies, and command secrets from diagnostics.
 - [ ] Cover process failure, malformed JSON, missing output, non-zero exit, timeout, and cancellation.
 - [ ] Add opt-in integration tests that skip clearly when `yt-dlp` or network access is unavailable.
