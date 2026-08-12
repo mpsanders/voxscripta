@@ -22,9 +22,9 @@ This is the actionable project backlog. Check an item only when its implementati
 - [x] Implement YouTube video ID and URL parsing for documented URL forms.
 - [x] Define `Provider` and orchestration contracts with `context.Context`.
 - [x] Define errors for invalid input, missing dependency, unavailable transcript, unsupported format, cancellation, and provider failure.
-- [ ] Implement the first subtitle parser using an established library if evaluation shows it handles YouTube output correctly.
-- [ ] Normalize HTML entities, Unicode, line breaks, and whitespace.
-- [ ] Define and implement de-duplication for YouTube's rolling automatic-caption cues.
+- [x] Implement the first subtitle parser; an established library was evaluated and rejected as disproportionate for the focused WebVTT contract.
+- [x] Normalize HTML entities, Unicode, line breaks, and whitespace.
+- [x] Define and implement de-duplication for YouTube's rolling automatic-caption cues.
 - [x] Implement plain-text rendering as a convenience over normalized segments.
 - [x] Add table-driven unit tests with at least five relevant cases per new or modified test, including zero/nil-style and malformed cases where applicable.
 
@@ -68,7 +68,7 @@ This is the actionable project backlog. Check an item only when its implementati
 ## Documentation and release readiness
 
 - [x] Create PlantUML package/class and acquisition sequence diagrams under `docs/uml`.
-- [ ] Keep `GOAL.md`, `ROADMAP.md`, `TODO.md`, and `IDEAS.md` aligned with implementation decisions.
+- [x] Keep `GOAL.md`, `ROADMAP.md`, `TODO.md`, and `IDEAS.md` aligned with implementation decisions through the normalized-core milestone.
 - [ ] Expand the README with the real module path, supported versions, installation, API examples, CLI examples, and limitations.
 - [ ] Document privacy, terms-of-service, copyright, rate-limit, and restricted-video considerations without claiming legal guarantees.
 - [ ] Document the tested `yt-dlp` version policy and response to upstream breakage.

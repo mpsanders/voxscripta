@@ -27,9 +27,9 @@ Exit criteria:
 
 ## Milestone 1: Normalized transcript core
 
-Status: in progress. The domain model, validation rules, errors, provider
-contract, URL/ID parsing, and plain-text rendering are implemented offline.
-WebVTT parsing and rolling-caption normalization are next.
+Status: complete. The domain model, validation rules, errors, provider contract,
+URL/ID parsing, WebVTT parsing and normalization, rolling-caption de-duplication,
+and plain-text rendering are implemented and tested offline.
 
 Build the provider-independent model and parsing foundation entirely offline.
 

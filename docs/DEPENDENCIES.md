@@ -1,6 +1,6 @@
 # Runtime dependencies
 
-The normalized core has no external runtime dependency. Caption acquisition
+The normalized core uses only the Go standard library and has no external runtime dependency. Caption acquisition
 will require `yt-dlp`; VoxScripta will detect it but will never install or update
 it for callers.
 

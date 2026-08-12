@@ -6,6 +6,7 @@ package "transcript (public)" {
   class Segment
   interface Provider
   class Options
+  class WebVTTParser
 }
 
 package "internal/ytdlp" {
@@ -21,4 +22,5 @@ CLI --> Provider : calls public API
 ProviderImpl ..|> Provider
 ProviderImpl --> CommandRunner
 Transcript *-- Segment
+WebVTTParser --> Segment : normalizes
 @enduml
