@@ -19,6 +19,13 @@ v1.0.0.
   diagnostics, cancellation, and temporary-artifact cleanup.
 - Explicit CLI local speech fallback through `--whisper-model`, ordered after
   caption acquisition and protected by duration and byte limits.
+- Opt-in real-runtime whisper.cpp integration coverage and a checked-in local
+  prototype evaluation for whisper.cpp 1.9.2 with FFmpeg 9.0.1.
+
+### Fixed
+
+- Interpret whisper.cpp JSON offsets as milliseconds, preventing speech
+  segment timestamps from being inflated tenfold.
 
 ### Security
 

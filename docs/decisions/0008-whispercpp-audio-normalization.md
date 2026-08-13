@@ -30,10 +30,12 @@ does not enable hosted providers from ambient credentials.
 
 Offline tests cover arguments, WAV passthrough, FFmpeg conversion, JSON timing,
 language hints/detection, malformed output, missing dependencies, failures, and
-cleanup. On 2026-08-13 neither FFmpeg nor `whisper-cli` was installed locally,
-so real-runtime accuracy, latency, memory use, version compatibility, and
-cancellation latency remain unvalidated. Live evaluation remains required
-before the adapter is described as production-ready.
+cleanup. A 2026-08-13 live evaluation with FFmpeg 9.0.1, whisper.cpp 1.9.2, its
+11-second public-domain JFK sample, and the multilingual medium model validated
+the file/JSON contract and exposed the now-corrected millisecond offset unit.
+The checked-in evaluation records accuracy, CPU latency, approximate memory,
+privacy, portability, and a Windows runtime-DLL caveat. Broader accuracy,
+smaller-model comparison, and measured in-flight cancellation remain open.
 
 ## Consequences
 

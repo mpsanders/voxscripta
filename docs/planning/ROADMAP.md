@@ -148,8 +148,9 @@ until the audio stream is closed. An opt-in `WhisperCPPTranscriber` now stages
 audio, verifies compatible PCM WAV or conditionally converts with FFmpeg,
 normalizes JSON segments, bounds diagnostics, honors cancellation, and cleans
 its workspace. The CLI composes captions then local speech when a model is
-explicitly supplied. Offline behavior is tested, but live whisper.cpp model
-evaluation, the hosted prototype, richer provenance, completeness policy, and
+explicitly supplied. A live whisper.cpp 1.9.2 medium-model evaluation now
+qualifies the local JSON contract and corrected its timestamp units. The
+hosted prototype, richer provenance, completeness policy, and
 full process-level fallback tests remain pending.
 
 Extend coverage without making heavy dependencies part of the core caption path.
@@ -198,6 +199,9 @@ Completed foundations:
 - Implement an explicitly configured local whisper.cpp adapter with verified
   compatible-WAV passthrough, conditional FFmpeg conversion, normalized JSON
   timestamps, bounded path-redacted diagnostics, and workspace cleanup.
+- Qualify whisper.cpp 1.9.2 locally with its public-domain JFK sample and
+  multilingual medium model; record accuracy, CPU latency, memory, privacy,
+  portability, cancellation, input, timestamp, and Windows runtime evidence.
 - Compose caption-first local speech fallback in the CLI only when a model is
   explicitly selected, with two-hour and 200 MiB default audio guards.
 

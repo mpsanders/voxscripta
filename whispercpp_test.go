@@ -29,9 +29,9 @@ func TestParseWhisperCPPJSON(t *testing.T) {
 		{name: "malformed", contents: "{", wantErr: ErrProviderFailure},
 		{name: "empty", contents: `{}`, wantErr: ErrTranscriptUnavailable},
 		{name: "auto without detected language", contents: `{"transcription":[{"offsets":{"from":0,"to":10},"text":"hello"}]}`, requested: "auto", wantErr: ErrTranscriptUnavailable},
-		{name: "requested language fallback", contents: `{"transcription":[{"offsets":{"from":0,"to":10},"text":" hello "}]}`, requested: "en", wantLang: "en", wantText: "hello", wantEnd: 100 * time.Millisecond, wantCount: 1},
-		{name: "detected language and offsets", contents: `{"result":{"language":"fr"},"transcription":[{"offsets":{"from":125,"to":250},"text":" bonjour "}]}`, requested: "en", wantLang: "fr", wantText: "bonjour", wantStart: 1250 * time.Millisecond, wantEnd: 2500 * time.Millisecond, wantCount: 1},
-		{name: "empty segments skipped", contents: `{"result":{"language":"en"},"transcription":[{"offsets":{"from":0,"to":1},"text":" "},{"offsets":{"from":1,"to":2},"text":"ok"}]}`, wantLang: "en", wantText: "ok", wantStart: 10 * time.Millisecond, wantEnd: 20 * time.Millisecond, wantCount: 1},
+		{name: "requested language fallback", contents: `{"transcription":[{"offsets":{"from":0,"to":10},"text":" hello "}]}`, requested: "en", wantLang: "en", wantText: "hello", wantEnd: 10 * time.Millisecond, wantCount: 1},
+		{name: "detected language and offsets", contents: `{"result":{"language":"fr"},"transcription":[{"offsets":{"from":125,"to":250},"text":" bonjour "}]}`, requested: "en", wantLang: "fr", wantText: "bonjour", wantStart: 125 * time.Millisecond, wantEnd: 250 * time.Millisecond, wantCount: 1},
+		{name: "empty segments skipped", contents: `{"result":{"language":"en"},"transcription":[{"offsets":{"from":0,"to":1},"text":" "},{"offsets":{"from":1,"to":2},"text":"ok"}]}`, wantLang: "en", wantText: "ok", wantStart: time.Millisecond, wantEnd: 2 * time.Millisecond, wantCount: 1},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

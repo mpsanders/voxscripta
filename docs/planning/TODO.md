@@ -104,7 +104,7 @@ adapter integration before the acquisition and prototype evidence it depends on.
 
 ### 3. Transcriber prototypes and architecture decision
 
-- [ ] Prototype `whisper.cpp` and record executable/model setup, required input format, file-path requirements, timestamp quality, cancellation, portability, privacy, accuracy, and resource use.
+- [x] Prototype `whisper.cpp` and record executable/model setup, required input format, file-path requirements, timestamp quality, cancellation, portability, privacy, accuracy, and resource use; the 2026-08-13 evaluation qualifies 1.9.2 with the multilingual medium model while retaining explicit limitations.
 - [ ] Prototype one hosted transcription provider, initially OpenAI unless evaluation selects another reference, and record accepted formats, upload/size limits, timestamps, cancellation, privacy, accuracy, latency, and cost.
 - [ ] Compare the prototypes in a checked-in evaluation record using representative legal audio fixtures.
 - [x] Decide and record whether FFmpeg conversion belongs inside an audio source or behind a separate audio-processor interface; decision 0008 keeps it inside the whisper.cpp adapter until another adapter demonstrates a shared boundary.

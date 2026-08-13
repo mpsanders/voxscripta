@@ -11,7 +11,7 @@ VoxScripta is a library-first Go toolkit for acquiring normalized, timestamped t
 > **Status:** caption-first development release. Caption discovery, selection,
 > retrieval, WebVTT normalization, checked audio acquisition, and an opt-in
 > local `whisper.cpp` adapter are implemented. The adapter has comprehensive
-> offline tests but has not yet been validated against a real local runtime.
+> offline tests and a recorded whisper.cpp 1.9.2 local-runtime evaluation.
 > Public APIs may change before v1.
 
 ## Why this project exists
@@ -239,6 +239,11 @@ detector, Staticcheck, and the network-backed Go vulnerability scan; install the
 pinned tool versions documented in [CONTRIBUTING.md](CONTRIBUTING.md) first.
 
 Network-dependent `yt-dlp` tests are opt-in so the normal unit-test suite remains deterministic. The ordinary suite includes process-level CLI smoke tests backed by a temporary fake provider executable. Run the live tests explicitly with `make integration`; this requires `yt-dlp` on `PATH` and public network access. `make test` continues to skip the live suite.
+
+The local whisper.cpp runtime test is separately opt-in and requires explicit
+executable, model, and compatible WAV sample paths through the environment
+variables documented in `docs/DEPENDENCIES.md`. The recorded prototype evidence
+is in `docs/evaluations/whispercpp-2026-08-13.md`.
 
 ## Project direction
 

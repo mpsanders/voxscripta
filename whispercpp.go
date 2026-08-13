@@ -187,7 +187,7 @@ type whisperJSON struct {
 	} `json:"transcription"`
 }
 
-// parseWhisperCPPJSON converts whisper.cpp's 10-millisecond offset units into
+// parseWhisperCPPJSON converts whisper.cpp's millisecond offset units into
 // normalized transcript segments and rejects output without usable speech.
 func parseWhisperCPPJSON(contents []byte, requestedLanguage string) (Transcription, error) {
 	var output whisperJSON
@@ -200,7 +200,7 @@ func parseWhisperCPPJSON(contents []byte, requestedLanguage string) (Transcripti
 		if text == "" {
 			continue
 		}
-		segments = append(segments, Segment{Start: time.Duration(item.Offsets.From) * 10 * time.Millisecond, End: time.Duration(item.Offsets.To) * 10 * time.Millisecond, Text: text})
+		segments = append(segments, Segment{Start: time.Duration(item.Offsets.From) * time.Millisecond, End: time.Duration(item.Offsets.To) * time.Millisecond, Text: text})
 	}
 	language := strings.TrimSpace(output.Result.Language)
 	if language == "" && requestedLanguage != "auto" {

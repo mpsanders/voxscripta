@@ -1,10 +1,12 @@
 package transcript_test
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"io"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -105,6 +107,64 @@ func TestYTDLPAudioSourceIntegration(t *testing.T) {
 			}
 			if closeErr := audio.Data.Close(); closeErr != nil {
 				t.Fatalf("close acquired audio: %v", closeErr)
+			}
+		})
+	}
+}
+
+// TestWhisperCPPIntegration exercises the public local transcriber against a
+// caller-installed whisper.cpp runtime and legal PCM WAV sample. It is opt-in
+// because model size, CPU time, and executable availability vary by machine.
+func TestWhisperCPPIntegration(t *testing.T) {
+	if os.Getenv("VOXSCRIPTA_WHISPER_INTEGRATION") != "1" {
+		t.Skip("set VOXSCRIPTA_WHISPER_INTEGRATION=1 to run live whisper.cpp tests")
+	}
+	executable := os.Getenv("VOXSCRIPTA_WHISPER_CLI")
+	model := os.Getenv("VOXSCRIPTA_WHISPER_MODEL")
+	sample := os.Getenv("VOXSCRIPTA_WHISPER_SAMPLE")
+	if executable == "" || model == "" || sample == "" {
+		t.Fatal("VOXSCRIPTA_WHISPER_CLI, VOXSCRIPTA_WHISPER_MODEL, and VOXSCRIPTA_WHISPER_SAMPLE are required")
+	}
+
+	contents, err := os.ReadFile(sample)
+	if err != nil {
+		t.Fatalf("read whisper.cpp sample: %v", err)
+	}
+	canceled, cancel := context.WithCancel(context.Background())
+	cancel()
+	tests := []struct {
+		name       string
+		ctx        context.Context
+		executable string
+		model      string
+		audio      transcript.Audio
+		wantErr    error
+		wantSpeech bool
+	}{
+		{name: "transcribes compatible WAV", ctx: context.Background(), executable: executable, model: model, audio: transcript.Audio{Data: io.NopCloser(bytes.NewReader(contents)), Format: "wav"}, wantSpeech: true},
+		{name: "honors pre-cancellation", ctx: canceled, executable: executable, model: model, audio: transcript.Audio{Data: io.NopCloser(bytes.NewReader(contents)), Format: "wav"}, wantErr: context.Canceled},
+		{name: "rejects nil context", executable: executable, model: model, audio: transcript.Audio{Data: io.NopCloser(bytes.NewReader(contents)), Format: "wav"}, wantErr: transcript.ErrInvalidInput},
+		{name: "rejects nil audio", ctx: context.Background(), executable: executable, model: model, wantErr: transcript.ErrInvalidInput},
+		{name: "reports missing executable", ctx: context.Background(), executable: filepath.Join(t.TempDir(), "missing-whisper"), model: model, audio: transcript.Audio{Data: io.NopCloser(bytes.NewReader(contents)), Format: "wav"}, wantErr: transcript.ErrMissingDependency},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			transcriber, constructorErr := transcript.NewWhisperCPPTranscriber(test.executable, test.model, "")
+			if constructorErr != nil {
+				t.Fatal(constructorErr)
+			}
+			ctx := test.ctx
+			if ctx != nil {
+				var timeoutCancel context.CancelFunc
+				ctx, timeoutCancel = context.WithTimeout(ctx, 5*time.Minute)
+				defer timeoutCancel()
+			}
+			result, transcribeErr := transcriber.Transcribe(ctx, test.audio, []string{"en"})
+			if !errors.Is(transcribeErr, test.wantErr) {
+				t.Fatalf("Transcribe() error = %v, want errors.Is(_, %v)", transcribeErr, test.wantErr)
+			}
+			if test.wantSpeech && (result.Language.Code != "en" || len(result.Segments) == 0 || result.Segments[0].Start != 0 || result.Segments[0].End < 10*time.Second || result.Segments[0].End > 12*time.Second) {
+				t.Fatalf("Transcribe() result = %#v", result)
 			}
 		})
 	}

@@ -40,9 +40,17 @@ caller-selected GGML model. It passes verified mono 16 kHz 16-bit PCM WAV
 through unchanged and invokes the configured FFmpeg executable for other input.
 Use `--whisper-model` to enable this chain in the CLI; the library uses
 `NewWhisperCPPTranscriber`. Current setup guidance is maintained by the
-upstream whisper.cpp project. Real-runtime compatibility has not yet been
-validated in this repository; the adapter currently has offline fake-process
-coverage only.
+upstream whisper.cpp project. Real-runtime compatibility was validated with
+whisper.cpp 1.9.2, FFmpeg 9.0.1, and the multilingual medium model on Windows
+on 2026-08-13. See `docs/evaluations/whispercpp-2026-08-13.md`; this is a
+known-good configuration, not a minimum-version claim.
+
+The opt-in live adapter test additionally requires
+`VOXSCRIPTA_WHISPER_INTEGRATION=1`, `VOXSCRIPTA_WHISPER_CLI`,
+`VOXSCRIPTA_WHISPER_MODEL`, and `VOXSCRIPTA_WHISPER_SAMPLE`. The sample must be
+a compatible mono 16 kHz 16-bit PCM WAV. On MinGW/MSYS2 Windows builds, ensure
+the matching runtime DLL directory precedes unrelated MinGW installations on
+`PATH`; an immediate `0xC0000139` exit indicates an incompatible DLL was found.
 
 ## Supported platforms
 
