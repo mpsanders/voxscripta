@@ -58,10 +58,5 @@ Ideas are deliberately separate from the committed roadmap. Promote an idea only
 - What minimum `yt-dlp` version can be supported without creating brittle version branches?
 - How much provider diagnostic metadata can be retained without leaking ephemeral signed URLs or credentials?
 - Does a streaming API provide meaningful value when `yt-dlp` discovery and caption retrieval are naturally whole-result operations?
-- Can downloaded audio be passed directly to each reference transcriber, or is
-  FFmpeg conversion required for correctness or predictable performance?
-- Do local file-oriented and hosted stream-oriented transcribers justify a
-  separate audio-processor/artifact contract, or can conversion remain an
-  implementation detail of the audio source?
 - What partial-result behavior can be represented consistently across local
   process cancellation and hosted request failures?

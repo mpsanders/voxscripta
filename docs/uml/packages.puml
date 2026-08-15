@@ -25,9 +25,12 @@ package "internal/ytdlp" {
   class AudioArtifact
 }
 
-package "planned Milestone 5 adapters" #EEEEEE {
-  interface AudioProcessor <<decision pending>>
-  class FFmpegProcessor <<conditional, planned>>
+package "external speech tools" {
+  class "whisper-cli process" as WhisperCLI
+  class "FFmpeg process" as FFmpeg
+}
+
+package "planned adapters" #EEEEEE {
   class HostedTranscriber <<prototype planned>>
 }
 
@@ -45,8 +48,9 @@ AudioSource --> Audio
 YTDLPAudioSource ..|> AudioSource
 YTDLPAudioSource --> YTDLPClient : checked audio download
 YTDLPClient --> AudioArtifact : returns owned artifact
-AudioProcessor <|.. FFmpegProcessor
 WhisperCPPTranscriber ..|> Transcriber
+WhisperCPPTranscriber --> WhisperCLI : JSON transcription
+WhisperCPPTranscriber --> FFmpeg : conditional normalization
 HostedTranscriber ..|> Transcriber
 YTDLPClient --> CommandRunner
 YTDLPClient --> Metadata : inspects

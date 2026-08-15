@@ -37,7 +37,7 @@ Deliverables:
 
 - Define `Transcript`, `Segment`, language/source metadata, and validation rules.
 - Implement video ID and supported YouTube URL parsing.
-- Implement the initial subtitle parser, likely WebVTT, using fixture-based tests.
+- Implement the WebVTT subtitle parser using fixture-based tests.
 - Normalize timing, whitespace, duplicate rolling-caption cues, and ordering according to documented rules.
 - Add plain-text rendering without discarding the timestamped source model.
 - Define typed/sentinel errors and provider interfaces.
@@ -109,14 +109,15 @@ Exit criteria:
 
 ## Milestone 4: Hardening and first release
 
-Status: locally tagged but not published. Cross-platform CI, formatting, vet, deterministic
+Status: locally tagged; remote publication is not verifiable from repository
+state alone. Cross-platform CI, formatting, vet, deterministic
 tests, race coverage, pinned Staticcheck, and pinned govulncheck gates are
 established. Responsible-use and upstream-breakage guidance, a changelog, and
 a release checklist are documented. Local release-hardening checks passed on
 2026-08-13. The annotated local `v0.1.0` tag points to the caption/fallback
-commit, but the configured GitLab remote had no tag on 2026-08-13. Publishing
-and clean-install validation remain maintainer actions. Current speech/audio
-work is post-tag and recorded under `Unreleased`.
+commit. Remote release publication and clean-install validation remain
+maintainer checks. Current speech/audio work is post-tag and recorded under
+`Unreleased`.
 
 Prepare the caption-only implementation for dependable reuse.
 
@@ -155,35 +156,21 @@ full process-level fallback tests remain pending.
 
 Extend coverage without making heavy dependencies part of the core caption path.
 
-Implementation sequence:
+Remaining sequence:
 
-1. **Checked `yt-dlp` audio acquisition.** Implement an audio source that
-   inspects duration before download, retrieves audio into isolated temporary
-   storage, constrains output size, honors cancellation, and removes all
-   temporary artifacts on success and failure.
-2. **Concrete adapter prototypes.** Prototype local `whisper.cpp` and one
-   hosted transcription service (initially OpenAI unless evaluation identifies
-   a better reference provider). Record accepted formats, path/stream needs,
-   timestamps, limits, cancellation behavior, privacy, portability, accuracy,
-   and cost without treating either prototype as production-ready.
-3. **Audio-processing boundary decision.** Use prototype evidence to decide
-   whether FFmpeg conversion belongs inside the `AudioSource` implementation or
-   behind a separate audio-processor contract. Invoke FFmpeg only when the
-   selected transcriber requires conversion; pass compatible downloaded audio
-   through unchanged.
-4. **Production adapter and safeguards.** Implement at least one separately
-   configured transcriber, normalize its segments, and add adapter-aware cost
-   and concurrency controls plus safe bounded diagnostics.
-5. **End-to-end fallback behavior.** Compose the audio/STT provider with
-   `FallbackProvider`, decide the partial-result policy, and test no-caption
-   fallback, failures, cancellation, resource limits, and cleanup across every
-   stage.
-6. **Completeness and CLI policy.** Define measurable caption completeness and
+1. **Hosted reference prototype.** Prototype one hosted transcription service
+   and record formats, limits, timestamps, cancellation, privacy, accuracy,
+   latency, and cost before selecting or implementing an adapter.
+2. **Adapter-specific safeguards.** Add explicit cost and concurrency controls
+   to any adapter that needs them; keep hosted credentials and diagnostics
+   bounded and redacted.
+3. **End-to-end fallback coverage.** Extend process-level tests across
+   no-caption acquisition, conversion, transcription failure, cancellation,
+   limits, partial-output rejection, and cleanup.
+4. **Completeness and provider policy.** Define measurable caption completeness and
    whether incomplete tracks are accepted, replaced, compared, or merged with
    speech-to-text. Expose deterministic caller-selected ordering in the library.
-   Make the CLI try every locally installed and explicitly enabled strategy,
-   preferring captions and local transcription before hosted services. A hosted
-   provider is available only through explicit CLI configuration; ambient
+   Any hosted CLI provider must require explicit configuration; ambient
    credentials alone must not trigger cost or audio disclosure.
 
 Completed foundations:

@@ -6,7 +6,7 @@ Build a dependable, library-first Go toolkit that applications can import to
 obtain a normalized, timestamped transcript from any accessible YouTube video
 with usable captions or speech, on a best-effort basis.
 
-The project should make the common case simple while keeping YouTube-specific volatility and external tooling behind clear boundaries. A small command-line program will exercise the public API during development and provide a useful diagnostic tool, but it is not the primary product.
+The project makes the common case simple while keeping YouTube-specific volatility and external tooling behind clear boundaries. A small command-line program exercises the public API during development and provides a useful diagnostic tool, but it is not the primary product.
 
 ## What success looks like
 
@@ -20,7 +20,7 @@ An importing application can:
 - replace or add acquisition providers without changing downstream code; and
 - render the normalized result as plain text or common subtitle formats.
 
-The default implementation should use `yt-dlp` to discover and retrieve existing captions. This delegates the frequently changing YouTube integration to a mature, actively maintained tool. Videos without usable captions can be handled by explicitly configured fallback: `yt-dlp` acquires checked audio, FFmpeg converts it only when required by the selected backend, and a replaceable local or hosted transcriber produces normalized segments. The library exposes caller-selected ordering and limits; the CLI should try every locally available and explicitly configured strategy without silently spending money or disclosing audio through ambient credentials.
+The default implementation uses `yt-dlp` to discover and retrieve existing captions. This delegates the frequently changing YouTube integration to a mature, actively maintained tool. Videos without usable captions can be handled by explicitly configured fallback: `yt-dlp` acquires checked audio, the implemented local `whisper.cpp` adapter uses FFmpeg only when its input requires conversion, and replaceable transcribers produce normalized segments. The current CLI tries captions and then local `whisper.cpp` only when a model is explicitly supplied; future providers must preserve explicit ordering without silently spending money or disclosing audio through ambient credentials.
 
 ## Product principles
 
@@ -42,18 +42,22 @@ The default implementation should use `yt-dlp` to discover and retrieve existing
 - Public YouTube video URLs and video IDs.
 - Discovery and retrieval of creator-provided and automatically generated captions through `yt-dlp`.
 - Language preference and deterministic track selection.
-- Parsing and normalization of one reliable machine-readable subtitle format, with WebVTT as the likely first format.
+- Parsing and normalization of WebVTT captions.
 - Timestamped transcript segments and plain-text rendering.
 - A thin development CLI.
 - Cross-platform support where Go and `yt-dlp` are available, beginning with Windows, Linux, and macOS.
 
+### Implemented optional scope
+
+- Explicit local speech-to-text fallback for videos without usable captions.
+- Checked audio acquisition through `yt-dlp` and conversion through FFmpeg only
+  when required by the configured `whisper.cpp` adapter.
+- Transcription kept separate from YouTube-specific acquisition so callers can
+  replace either side without changing downstream transcript handling.
+
 ### Later scope
 
-- Optional speech-to-text providers for videos without usable captions.
-- Audio acquisition through `yt-dlp` and conversion through `ffmpeg` where required.
-- Local and hosted transcription adapters kept separate from YouTube-specific
-  acquisition so callers can choose privacy, portability, latency, and cost
-  tradeoffs without changing downstream transcript handling.
+- Hosted transcription adapters with explicit privacy, latency, and cost controls.
 - Additional renderers such as WebVTT, SRT, Markdown, and JSON.
 - Provider diagnostics, caching hooks, and observability.
 - Batch acquisition with caller-controlled concurrency.
@@ -70,9 +74,9 @@ The default implementation should use `yt-dlp` to discover and retrieve existing
   to support transcription.
 - Making the official YouTube Data API the default path for arbitrary public videos; caption downloads there are suited to content the authenticated user can manage.
 
-## Proposed public API direction
+## Current public API direction
 
-Names may change during the API-design milestone, but the desired shape is intentionally small:
+Names may still change before v1, but the implemented shape is intentionally small:
 
 ```go
 client, err := transcript.New(
@@ -92,7 +96,7 @@ if err != nil {
 fmt.Println(result.Text())
 ```
 
-The normalized domain model should retain at least:
+The normalized domain model retains:
 
 - video ID and, when available, title;
 - selected language and source kind; a future translation interface must also
@@ -101,7 +105,7 @@ The normalized domain model should retain at least:
 - ordered segments with start time, end time, and text; and
 - provider metadata useful for diagnosis without coupling callers to raw provider output.
 
-Advanced users should be able to construct an orchestrator with their own providers, while the default constructor remains straightforward.
+Advanced users can construct an orchestrator with their own providers, while the default constructor remains straightforward.
 
 ## Completion criteria
 

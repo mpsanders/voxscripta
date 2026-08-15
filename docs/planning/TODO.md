@@ -69,7 +69,7 @@ This is the actionable project backlog. Check an item only when its implementati
 ## Documentation and release readiness
 
 - [x] Create PlantUML package/class and acquisition sequence diagrams under `docs/uml`.
-- [x] Keep `GOAL.md`, `ROADMAP.md`, `TODO.md`, and `IDEAS.md` aligned with implementation decisions through the normalized-core milestone.
+- [x] Keep `GOAL.md`, `ROADMAP.md`, `TODO.md`, and `IDEAS.md` aligned through the implemented caption, audio-acquisition, and local whisper.cpp fallback milestones.
 - [x] Expand the README with the real module path, supported versions, installation, API examples, CLI examples, and limitations.
 - [x] Document privacy, terms-of-service, copyright, rate-limit, and restricted-video considerations without claiming legal guarantees.
 - [x] Document the tested `yt-dlp` version policy and response to upstream breakage.

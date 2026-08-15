@@ -18,7 +18,7 @@ VoxScripta is a library-first Go toolkit for acquiring normalized, timestamped t
 
 Applications that summarize, search, cite, or otherwise process video speech need more than a plain text blob. They need timestamps, language and source information, predictable selection rules, cancellation, and errors they can act on.
 
-YouTube's unofficial extraction surfaces change frequently. Instead of embedding a fragile reimplementation, this project uses [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) for caption discovery and retrieval, then normalizes the result behind an idiomatic Go API. An explicitly configured speech-to-text provider can cover videos that have no usable captions once a concrete transcriber is added.
+YouTube's unofficial extraction surfaces change frequently. Instead of embedding a fragile reimplementation, this project uses [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) for caption discovery and retrieval, then normalizes the result behind an idiomatic Go API. The implemented, explicitly configured local `whisper.cpp` fallback can cover videos that have no usable captions.
 
 ## Intended capabilities
 
@@ -35,9 +35,9 @@ YouTube's unofficial extraction surfaces change frequently. Instead of embedding
 Optional provider fallback is explicit. `transcript.FallbackProvider` invokes
 its fallback only when the primary provider reports
 `ErrTranscriptUnavailable`; it does not turn cancellation, invalid input,
-missing dependencies, or provider failures into additional work. A future
-transcriber adapter can use this composition without becoming a core runtime
-dependency. The public `AudioSource` and `Transcriber` contracts are
+missing dependencies, or provider failures into additional work. Transcriber
+adapters use this composition without becoming core runtime dependencies. The
+public `AudioSource` and `Transcriber` contracts are
 separate, and `SpeechToTextProvider` composes them while enforcing optional
 duration/file-size limits and closing acquired audio on every post-acquisition
 path. Cleanup failures are returned. `YTDLPAudioSource` is the concrete audio
@@ -93,7 +93,7 @@ if err != nil {
 fmt.Print(result.Text())
 ```
 
-The canonical result will retain segment timing rather than reducing the transcript to text immediately:
+The canonical result retains segment timing rather than reducing the transcript to text immediately:
 
 ```go
 type Segment struct {
@@ -133,7 +133,7 @@ ytextract --check --yt-dlp /path/to/yt-dlp
 ytextract --whisper-model /path/to/ggml-base.bin VIDEO_URL
 ```
 
-Transcript data will be written to stdout and diagnostics to stderr so the command can be composed with other tools.
+Transcript data is written to stdout and diagnostics to stderr so the command can be composed with other tools.
 
 The CLI includes automatic captions by default. In the library, automatic captions are explicit: set `Options.AllowAutomatic` to `true`. Empty language preferences select the video's reported original language when possible, then deterministically fall back to the first eligible track. Translation is outside the caption-only API and may be added later behind a distinct interface.
 
@@ -169,8 +169,9 @@ manifest/fragment downloads are not hard-bounded while in flight. `Audio.Format`
 is a lower-case container/file-extension hint, not a codec guarantee. Direct
 `YTDLPAudioSource.Acquire` callers must close `Audio.Data` promptly to remove
 the temporary artifact. `SpeechToTextProvider` closes it automatically. Cost
-and concurrency controls will be designed with the first concrete adapter rather
-than represented by misleading generic fields.
+and concurrency controls remain adapter-specific work for providers that incur
+cost or need an execution cap; they are not represented by misleading generic
+fields.
 
 The current public composition is explicit: create the ordinary caption client,
 use it as `FallbackProvider.Primary`, use a configured `SpeechToTextProvider`
@@ -204,7 +205,7 @@ captions only within the same preference and match rank. Automatic captions
 require explicit library permission and are enabled by default in the CLI.
 Speech-to-text runs only through an explicitly configured fallback provider.
 
-The result will report what was actually selected.
+The result reports what was actually selected.
 
 ## Limitations and responsible use
 
