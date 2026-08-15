@@ -21,6 +21,9 @@ v1.0.0.
   caption acquisition and protected by duration and byte limits.
 - Opt-in real-runtime whisper.cpp integration coverage and a checked-in local
   prototype evaluation for whisper.cpp 1.9.2 with FFmpeg 9.0.1.
+- A portable `make whisper-integration` target with overridable whisper.cpp
+  executable, model, sample, and Windows runtime paths loaded from an ignored
+  local `.env`.
 
 ### Fixed
 

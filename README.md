@@ -224,6 +224,7 @@ The repository Makefile provides the common development commands:
 make build
 make test
 make integration
+make whisper-integration
 make vet
 make staticcheck
 make vuln
@@ -240,10 +241,16 @@ pinned tool versions documented in [CONTRIBUTING.md](CONTRIBUTING.md) first.
 
 Network-dependent `yt-dlp` tests are opt-in so the normal unit-test suite remains deterministic. The ordinary suite includes process-level CLI smoke tests backed by a temporary fake provider executable. Run the live tests explicitly with `make integration`; this requires `yt-dlp` on `PATH` and public network access. `make test` continues to skip the live suite.
 
-The local whisper.cpp runtime test is separately opt-in and requires explicit
-executable, model, and compatible WAV sample paths through the environment
-variables documented in `docs/DEPENDENCIES.md`. The recorded prototype evidence
-is in `docs/evaluations/whispercpp-2026-08-13.md`.
+The local whisper.cpp runtime test is separately opt-in. Copy `.env.example` to
+`.env`, set `WHISPER_MODEL` and `WHISPER_SAMPLE` to the local model and compatible
+WAV sample paths, then run `make whisper-integration`. `WHISPER_CLI` defaults to
+`whisper-cli` and can be overridden when the executable is elsewhere. Windows
+MinGW/MSYS2 builds can set `WHISPER_RUNTIME_DIR` to prepend the matching runtime
+DLL directory for this target. The local `.env` is ignored by Git, and
+command-line assignments remain available for one-off overrides. The
+corresponding environment variables and sample requirements are documented in
+`docs/DEPENDENCIES.md`. The recorded prototype evidence is in
+`docs/evaluations/whispercpp-2026-08-13.md`.
 
 ## Project direction
 

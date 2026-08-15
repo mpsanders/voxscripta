@@ -51,6 +51,22 @@ The opt-in live adapter test additionally requires
 a compatible mono 16 kHz 16-bit PCM WAV. On MinGW/MSYS2 Windows builds, ensure
 the matching runtime DLL directory precedes unrelated MinGW installations on
 `PATH`; an immediate `0xC0000139` exit indicates an incompatible DLL was found.
+The Makefile configures these environment variables from an optional local
+`.env`. Copy the checked-in template and replace its example paths:
+
+```console
+cp .env.example .env
+make whisper-integration
+```
+
+`WHISPER_CLI` defaults to `whisper-cli`; the model and sample have no portable
+defaults and must be supplied by the caller. `.env` uses Make assignment syntax,
+is ignored by Git, and accepts unquoted paths containing spaces. Prefer forward
+slashes for Windows paths. Command-line variable assignments take precedence and
+can still be used for one-off runs. On Windows, set `WHISPER_RUNTIME_DIR` to the
+matching MinGW/MSYS2 runtime directory when another toolchain appears earlier on
+the global `PATH`. The target prepends it only for the integration-test process.
+For an MSYS2 UCRT64 build, this is typically `C:/msys64/ucrt64/bin`.
 
 ## Supported platforms
 

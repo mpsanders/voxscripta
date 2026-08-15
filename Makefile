@@ -3,6 +3,15 @@ GOFMT ?= gofmt
 GOVULNCHECK ?= govulncheck
 STATICCHECK ?= staticcheck
 GOCACHE ?= $(CURDIR)/.gocache
+WHISPER_CLI ?= whisper-cli
+WHISPER_MODEL ?=
+WHISPER_SAMPLE ?=
+WHISPER_RUNTIME_DIR ?=
+
+# Load optional machine-local integration settings. Command-line assignments
+# continue to take precedence over values read from this file.
+-include .env
+
 export GOCACHE
 
 BINARY := ytextract
@@ -14,7 +23,7 @@ endif
 
 .DEFAULT_GOAL := help
 
-.PHONY: help build run test integration race vet staticcheck vuln fmt fmt-check tidy tidy-check check hardening clean
+.PHONY: help build run test integration whisper-integration race vet staticcheck vuln fmt fmt-check tidy tidy-check check hardening clean
 
 help: ## Show the available targets.
 	@echo "VoxScripta development targets:"
@@ -22,6 +31,7 @@ help: ## Show the available targets.
 	@echo "  make run         Run the CLI (pass options with ARGS='...')"
 	@echo "  make test        Run all unit tests"
 	@echo "  make integration Run opt-in live yt-dlp integration tests"
+	@echo "  make whisper-integration Run the opt-in whisper.cpp integration test"
 	@echo "  make race        Run all unit tests with the race detector"
 	@echo "  make vet         Run go vet"
 	@echo "  make staticcheck Run Staticcheck (must be installed separately)"
@@ -48,6 +58,17 @@ ifeq ($(OS),Windows_NT)
 	set VOXSCRIPTA_YTDLP_INTEGRATION=1&& $(GO) test -run TestYTDLP.*Integration -v .
 else
 	VOXSCRIPTA_YTDLP_INTEGRATION=1 $(GO) test -run 'TestYTDLP.*Integration' -v .
+endif
+
+whisper-integration: ## Run the live whisper.cpp test using paths configured in .env or on the command line.
+ifeq ($(OS),Windows_NT)
+ifneq ($(strip $(WHISPER_RUNTIME_DIR)),)
+	set "PATH=$(WHISPER_RUNTIME_DIR);%PATH%"&& set "VOXSCRIPTA_WHISPER_INTEGRATION=1"&& set "VOXSCRIPTA_WHISPER_CLI=$(WHISPER_CLI)"&& set "VOXSCRIPTA_WHISPER_MODEL=$(WHISPER_MODEL)"&& set "VOXSCRIPTA_WHISPER_SAMPLE=$(WHISPER_SAMPLE)"&& $(GO) test -run TestWhisperCPPIntegration -v .
+else
+	set "VOXSCRIPTA_WHISPER_INTEGRATION=1"&& set "VOXSCRIPTA_WHISPER_CLI=$(WHISPER_CLI)"&& set "VOXSCRIPTA_WHISPER_MODEL=$(WHISPER_MODEL)"&& set "VOXSCRIPTA_WHISPER_SAMPLE=$(WHISPER_SAMPLE)"&& $(GO) test -run TestWhisperCPPIntegration -v .
+endif
+else
+	VOXSCRIPTA_WHISPER_INTEGRATION=1 VOXSCRIPTA_WHISPER_CLI="$(WHISPER_CLI)" VOXSCRIPTA_WHISPER_MODEL="$(WHISPER_MODEL)" VOXSCRIPTA_WHISPER_SAMPLE="$(WHISPER_SAMPLE)" $(GO) test -run 'TestWhisperCPPIntegration' -v .
 endif
 
 race: ## Run all unit tests with the race detector.
