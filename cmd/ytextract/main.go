@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	transcript "github.com/mpsanders/VoxScripta"
-	"github.com/mpsanders/VoxScripta/internal/ytdlp"
+	transcript "github.com/mpsanders/voxscripta"
+	"github.com/mpsanders/voxscripta/internal/ytdlp"
 )
 
 var version = "dev"

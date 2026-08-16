@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	transcript "github.com/mpsanders/VoxScripta"
+	transcript "github.com/mpsanders/voxscripta"
 )
 
 type exampleProvider struct{}

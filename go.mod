@@ -1,3 +1,3 @@
-module github.com/mpsanders/VoxScripta
+module github.com/mpsanders/voxscripta
 
-go 1.25.0
+go 1.26.1

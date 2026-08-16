@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mpsanders/VoxScripta/internal/ytdlp"
+	"github.com/mpsanders/voxscripta/internal/ytdlp"
 )
 
 // Audio is acquired media supplied to a Transcriber. Data must be non-nil.

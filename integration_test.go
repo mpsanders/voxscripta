@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	transcript "github.com/mpsanders/VoxScripta"
+	transcript "github.com/mpsanders/voxscripta"
 )
 
 // TestYTDLPIntegration exercises the public API against the validated live

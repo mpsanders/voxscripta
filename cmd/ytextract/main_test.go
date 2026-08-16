@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	transcript "github.com/mpsanders/VoxScripta"
+	transcript "github.com/mpsanders/voxscripta"
 )
 
 var errTestFailure = errors.New("test failure")

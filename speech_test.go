@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mpsanders/VoxScripta/internal/ytdlp"
+	"github.com/mpsanders/voxscripta/internal/ytdlp"
 )
 
 type recordingAudioSource struct {

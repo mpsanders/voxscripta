@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/mpsanders/VoxScripta/internal/ytdlp"
+	"github.com/mpsanders/voxscripta/internal/ytdlp"
 )
 
 // Client coordinates input validation and transcript acquisition through a
